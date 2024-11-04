@@ -12,8 +12,6 @@ const firebaseConfig = {
   appId: process.env.REACT_APP_FIREBASE_APP_ID,
   measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID
 };
-// Para verificar que las variables se están cargando correctamente
-console.log("API Key:", process.env.REACT_APP_FIREBASE_API_KEY);
 
 // Initialize Firebase
 export const app = initializeApp(firebaseConfig);
