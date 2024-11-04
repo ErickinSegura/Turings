@@ -15,7 +15,7 @@ const PuntajesPage = () => {
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
       {/* Tarjeta de Top 5 */}
-      <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-100 mb-6">
+      <div className="bg-white rounded-xl p-6 shadow-sm border border-black mb-6">
         <div className="flex justify-between items-center mb-4">
           <div>
             <h2 className="text-xl font-semibold">Turings</h2>
@@ -27,7 +27,7 @@ const PuntajesPage = () => {
           {topUsers.map((user) => (
             <div 
               key={user.id} 
-              className="flex items-center justify-between py-2"
+              className="flex items-center justify-around py-2"
             >
               <div className="flex items-center">
                 <svg 
@@ -52,9 +52,15 @@ const PuntajesPage = () => {
       </div>
 
       {/* Tarjeta de Total Turings */}
-      <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-100">
+      <div className="bg-white rounded-xl p-6 shadow-sm border border-black">
+        <h1 className="text-3xl font-semibold mb-4">Resumen</h1>
+        
         <h3 className="text-gray-600 mb-2">Cantidad de Turings en el grupo</h3>
         <p className="text-2xl font-semibold">{totalTurings} Turings</p>
+
+        <h3 className="text-gray-600 mt-4 mb-2">Promedio de Turings en el grupo</h3>
+        <p className="text-2xl font-semibold">{totalTurings / topUsers.length} Turings</p>
+
       </div>
     </div>
   );

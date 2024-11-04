@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../context/authContext';
 
 const HomePage = () => {
   const stats = {
@@ -11,11 +12,15 @@ const HomePage = () => {
     ]
   };
 
+  const { user } = useAuth();
+
+  console.log(user);
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
-      {/* Hero Section */}
+
       <div className="text-center mb-16">
-        <h1 className="text-4xl font-bold mb-4">Bienvenido a Tuning</h1>
+        <h1 className="text-4xl font-bold mb-4">Bienvenido a Turing</h1>
         <p className="text-gray-600 text-lg mb-8">
           Tu plataforma de recompensas y beneficios académicos
         </p>
