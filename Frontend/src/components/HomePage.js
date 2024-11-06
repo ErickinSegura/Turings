@@ -1,138 +1,110 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/authContext';
+import { Activity, Award, Clock, Book, Terminal } from 'lucide-react';
 
 const HomePage = () => {
   const stats = {
-    totalTurings: 70,
-    topProducts: [
-      { name: "Espada Maestra", price: 100 },
-      { name: "Corazón", price: 20 },
-      { name: "Escudo Hyliano", price: 15 }
+    turingBalance: 25,
+    recentTransactions: [
+      { type: 'earned', amount: 5, description: 'Participación en clase - Máquinas de Turing' },
+      { type: 'spent', amount: 2, description: 'Extensión de entrega - Algoritmos' }
+    ],
+    availableBenefits: [
+      { name: "Extensión de entrega (24h)", cost: 2 },
+      { name: "Punto extra en tarea", cost: 5 },
+      { name: "Revisión anticipada", cost: 3 }
     ]
   };
 
-  const { user } = useAuth();
+  const { user, logOut } = useAuth();
 
-  console.log(user);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
 
-      <div className="text-center mb-16">
-        <h1 className="text-4xl font-bold mb-4">Bienvenido a Turing</h1>
-        <p className="text-gray-600 text-lg mb-8">
-          Tu plataforma de recompensas y beneficios académicos
-        </p>
-        <Link 
-          to="/tienda" 
-          className="inline-flex items-center px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg transition-colors"
-        >
-          Explorar Tienda
-          <svg 
-            className="ml-2 w-5 h-5" 
-            fill="none" 
-            stroke="currentColor" 
-            viewBox="0 0 24 24"
-          >
-            <path 
-              strokeLinecap="round" 
-              strokeLinejoin="round" 
-              strokeWidth={2} 
-              d="M14 5l7 7m0 0l-7 7m7-7H3"
-            />
-          </svg>
-        </Link>
-      </div>
-
-      {/* Features Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-          <div className="text-blue-500 mb-4">
-            <svg 
-              className="w-8 h-8" 
-              fill="none" 
-              stroke="currentColor" 
-              viewBox="0 0 24 24"
-            >
-              <path 
-                strokeLinecap="round" 
-                strokeLinejoin="round" 
-                strokeWidth={2} 
-                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-          </div>
-          <h2 className="text-xl font-semibold mb-2">Gana Turings</h2>
-          <p className="text-gray-600">
-            Acumula Turings por tu participación y buen desempeño académico.
-          </p>
-        </div>
-
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-          <div className="text-blue-500 mb-4">
-            <svg 
-              className="w-8 h-8" 
-              fill="none" 
-              stroke="currentColor" 
-              viewBox="0 0 24 24"
-            >
-              <path 
-                strokeLinecap="round" 
-                strokeLinejoin="round" 
-                strokeWidth={2} 
-                d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
-              />
-            </svg>
-          </div>
-          <h2 className="text-xl font-semibold mb-2">Compra Beneficios</h2>
-          <p className="text-gray-600">
-            Usa tus Turings para obtener extensiones de tiempo y beneficios especiales.
-          </p>
-        </div>
-
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-          <div className="text-blue-500 mb-4">
-            <svg 
-              className="w-8 h-8" 
-              fill="none" 
-              stroke="currentColor" 
-              viewBox="0 0 24 24"
-            >
-              <path 
-                strokeLinecap="round" 
-                strokeLinejoin="round" 
-                strokeWidth={2} 
-                d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
-              />
-            </svg>
-          </div>
-          <h2 className="text-xl font-semibold mb-2">Sigue tu Progreso</h2>
-          <p className="text-gray-600">
-            Monitorea tu posición en el ranking y tus Turings acumulados.
-          </p>
-        </div>
-      </div>
-
-      {/* Stats Section */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-          <h3 className="text-lg font-semibold mb-4">Turings en Circulación</h3>
-          <div className="flex items-end space-x-2">
-            <span className="text-3xl font-bold">{stats.totalTurings}</span>
-            <span className="text-gray-600 mb-1">Turings</span>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 py-8">
+      <div className="max-w-7xl mx-auto px-4">
+      <button onClick={logOut} className="bg-red-500 text-white px-4 py-2 rounded-lg">Cerrar Sesión</button>
+        <div className="bg-white rounded-2xl shadow-lg p-6 mb-8 border-2 border-blue-200">
+          <div className="flex justify-between items-center">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">
+                Hola, {user?.name || 'Estudiante'}
+              </h1>
+              <p className="text-gray-600">Gestiona tus Turings y beneficios académicos</p>
+            </div>
+            <div className="text-right">
+              <p className="text-sm text-gray-600">Tu balance actual</p>
+              <p className="text-3xl font-bold text-blue-600">{stats.turingBalance} τ</p>
+            </div>
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-          <h3 className="text-lg font-semibold mb-4">Productos Destacados</h3>
-          <div className="space-y-3">
-            {stats.topProducts.map((product, index) => (
-              <div key={index} className="flex justify-between items-center">
-                <span className="text-gray-600">{product.name}</span>
-                <span className="font-medium">{product.price} Turings</span>
-              </div>
-            ))}
+        {/* Grid de acciones rápidas */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <Link to="/earn" className="group">
+            <div className="bg-white p-6 rounded-xl shadow-md border-2 border-emerald-200 hover:border-emerald-400 transition-all">
+              <Activity className="w-8 h-8 text-emerald-500 mb-4" />
+              <h2 className="text-lg font-semibold mb-2">Ganar Turings</h2>
+              <p className="text-gray-600 text-sm">Participa en clase y resuelve ejercicios</p>
+            </div>
+          </Link>
+
+          <Link to="/spend" className="group">
+            <div className="bg-white p-6 rounded-xl shadow-md border-2 border-purple-200 hover:border-purple-400 transition-all">
+              <Award className="w-8 h-8 text-purple-500 mb-4" />
+              <h2 className="text-lg font-semibold mb-2">Canjear Beneficios</h2>
+              <p className="text-gray-600 text-sm">Usa tus Turings para obtener ventajas</p>
+            </div>
+          </Link>
+
+          <Link to="/history" className="group">
+            <div className="bg-white p-6 rounded-xl shadow-md border-2 border-blue-200 hover:border-blue-400 transition-all">
+              <Clock className="w-8 h-8 text-blue-500 mb-4" />
+              <h2 className="text-lg font-semibold mb-2">Historial</h2>
+              <p className="text-gray-600 text-sm">Revisa tus transacciones pasadas</p>
+            </div>
+          </Link>
+        </div>
+
+        {/* Sección de actividad reciente y beneficios */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Actividad Reciente */}
+          <div className="bg-white rounded-xl shadow-lg p-6 border-2 border-gray-200">
+            <div className="flex items-center mb-4">
+              <Terminal className="w-6 h-6 text-gray-700 mr-2" />
+              <h2 className="text-xl font-bold">Actividad Reciente</h2>
+            </div>
+            <div className="space-y-4">
+              {stats.recentTransactions.map((transaction, index) => (
+                <div key={index} className="flex justify-between items-center p-3 rounded-lg bg-gray-50">
+                  <span className="text-gray-700">{transaction.description}</span>
+                  <span className={`font-semibold ${
+                    transaction.type === 'earned' ? 'text-emerald-600' : 'text-red-600'
+                  }`}>
+                    {transaction.type === 'earned' ? '+' : '-'}{transaction.amount} τ
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Beneficios Disponibles */}
+          <div className="bg-white rounded-xl shadow-lg p-6 border-2 border-gray-200">
+            <div className="flex items-center mb-4">
+              <Book className="w-6 h-6 text-gray-700 mr-2" />
+              <h2 className="text-xl font-bold">Beneficios Disponibles</h2>
+            </div>
+            <div className="space-y-4">
+              {stats.availableBenefits.map((benefit, index) => (
+                <div key={index} className="flex justify-between items-center p-3 rounded-lg bg-gray-50">
+                  <span className="text-gray-700">{benefit.name}</span>
+                  <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-lg font-semibold">
+                    {benefit.cost} τ
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
@@ -140,4 +112,4 @@ const HomePage = () => {
   );
 };
 
-export default HomePage;
+export default HomePage;{}

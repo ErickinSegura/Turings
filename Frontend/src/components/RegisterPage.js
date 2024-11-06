@@ -6,6 +6,7 @@ const RegisterPage = () => {
   const [user, setUser] = useState({
     email: "",
     password: "",
+    name: "", // Agregamos el campo nombre
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
@@ -25,35 +26,44 @@ const RegisterPage = () => {
     setError(null);
     setIsSubmitting(true);
 
-    if (!user.email || !user.password) {
+    // Validar que todos los campos estén completos
+    if (!user.email || !user.password || !user.name) {
       setError('Por favor completa todos los campos');
       setIsSubmitting(false);
       return;
     }
 
-    const result = await signUp(user.email, user.password);
-    
-    if (result.error) {
-      let errorMessage;
-      switch (result.error.code) {
-        case 'auth/email-already-in-use':
-          errorMessage = 'Este correo electrónico ya está registrado';
-          break;
-        case 'auth/invalid-email':
-          errorMessage = 'El correo electrónico no es válido';
-          break;
-        case 'auth/weak-password':
-          errorMessage = 'La contraseña debe tener al menos 6 caracteres';
-          break;
-        default:
-          errorMessage = 'Ocurrió un error durante el registro';
+    try {
+      // Usar el nuevo signUp que acepta datos adicionales
+      const result = await signUp(user.email, user.password, {
+        name: user.name,
+        role: "student" // Role por defecto
+      });
+      
+      if (result.error) {
+        let errorMessage;
+        switch (result.error.code) {
+          case 'auth/email-already-in-use':
+            errorMessage = 'Este correo electrónico ya está registrado';
+            break;
+          case 'auth/invalid-email':
+            errorMessage = 'El correo electrónico no es válido';
+            break;
+          case 'auth/weak-password':
+            errorMessage = 'La contraseña debe tener al menos 6 caracteres';
+            break;
+          default:
+            errorMessage = 'Ocurrió un error durante el registro';
+        }
+        setError(errorMessage);
+      } else {
+        navigate('/');
       }
-      setError(errorMessage);
-    } else {
-      navigate('/');
+    } catch (error) {
+      setError('Error al crear la cuenta. Por favor, intenta de nuevo.');
+    } finally {
+      setIsSubmitting(false);
     }
-    
-    setIsSubmitting(false);
   };
 
   return (
@@ -73,6 +83,24 @@ const RegisterPage = () => {
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-6">
           <div className="rounded-md shadow-sm space-y-4">
+            {/* Campo Nombre */}
+            <div>
+              <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+                Nombre completo
+              </label>
+              <input
+                type="text"
+                name="name"
+                id="name"
+                placeholder="Tu nombre completo"
+                value={user.name}
+                onChange={handleChanges}
+                disabled={isSubmitting}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              />
+            </div>
+
+            {/* Campo Email */}
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                 Email
@@ -89,6 +117,7 @@ const RegisterPage = () => {
               />
             </div>
 
+            {/* Campo Contraseña */}
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700">
                 Contraseña
