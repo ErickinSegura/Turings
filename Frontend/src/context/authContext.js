@@ -6,7 +6,7 @@ import {
   signOut
 } from "firebase/auth";
 import { auth } from "../firebase";
-import { db } from "../firebase"; // Asegúrate de exportar db desde tu archivo firebase
+import { db } from "../firebase";
 import { doc, setDoc, getDoc, serverTimestamp } from "firebase/firestore";
 
 const AuthContext = createContext();
@@ -32,7 +32,7 @@ function AuthProvider({ children }) {
         name: userData.name,
         role: userData.role || "student",
         groupIds: [],
-        currentBalance: 0,
+        turingBalance: 0,
         createdAt: serverTimestamp(),
       });
     } catch (error) {
@@ -57,7 +57,6 @@ function AuthProvider({ children }) {
   const logIn = async (email, password) => {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      // Opcionalmente, podrías cargar los datos adicionales del usuario desde Firestore
       const userDoc = await getDoc(doc(db, "users", userCredential.user.uid));
       if (userDoc.exists()) {
         setUser({
@@ -83,7 +82,6 @@ function AuthProvider({ children }) {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
-        // Cargar datos adicionales del usuario desde Firestore
         const userDoc = await getDoc(doc(db, "users", currentUser.uid));
         if (userDoc.exists()) {
           setUser({
@@ -98,17 +96,16 @@ function AuthProvider({ children }) {
       }
       setLoading(false);
     });
-
     return () => unsubscribe();
   }, []);
 
   return (
-    <AuthContext.Provider value={{ 
-      signUp, 
-      logIn, 
-      user, 
-      logOut, 
-      loading 
+    <AuthContext.Provider value={{
+      signUp,
+      logIn,
+      user,
+      logOut,
+      loading
     }}>
       {!loading && children}
     </AuthContext.Provider>

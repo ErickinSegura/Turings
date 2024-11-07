@@ -7,6 +7,8 @@ import { AuthProvider } from './context/authContext';
 import RegisterPage from './components/RegisterPage';
 import LoginPage from './components/LoginPage';
 import QRPage from './components/QRPage';
+import StudentProfilePage from './components/StudentProfilePage';
+import TeacherProfilePage from './components/ProfessorProfilePage';
 import ProtectedRoute from './components/ProtectedRoutes';
 
 function App() {
@@ -24,15 +26,14 @@ function AppContent() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {location.pathname !== ('/login' || '/register')  && <NavBar />}
+      {location.pathname !== '/login' && location.pathname !== '/register' && <NavBar />}
       <Routes>
-
         <Route path="/" element={
           <ProtectedRoute>
             <HomePage />
           </ProtectedRoute>
         } />
-
+        
         <Route path="/tienda" element={
           <ProtectedRoute>
             <TiendaPage />
@@ -45,18 +46,26 @@ function AppContent() {
           </ProtectedRoute>
         } />
 
-        <Route 
-          path="/perfil" 
-          element={
-            <ProtectedRoute>
-              <QRPage />
-            </ProtectedRoute>
-          } 
-        />
+        <Route path="/perfil" element={
+          <ProtectedRoute>
+            <TeacherProfilePage />
+          </ProtectedRoute>
+        } />
 
+        <Route path="/perfil-estudiante" element={
+          <ProtectedRoute>
+            <StudentProfilePage />
+          </ProtectedRoute>
+        } />
 
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/register" element={<RegisterPage />} />
+        <Route path="/qr" element={
+          <ProtectedRoute>
+            <QRPage />
+          </ProtectedRoute>
+        } />
+
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
       </Routes>
     </div>
   );

@@ -12,4 +12,14 @@ function ProtectedRoutes({ children }) {
   return children;
 }
 
+function ProtectedAdminRoutes({ children }) {
+  const { user } = useAuth();
+
+  if (!user || user.role !== 'admin') {
+    return <Navigate to="/login" replace />;
+  }
+
+  return children;
+}
+
 export default ProtectedRoutes;
