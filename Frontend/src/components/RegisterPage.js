@@ -1,6 +1,7 @@
+// src/components/RegisterPage.js
 import { useState } from "react";
-import { useAuth } from "../context/authContext";
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from "../context/authContext";
 
 const RegisterPage = () => {
   const [user, setUser] = useState({
@@ -33,12 +34,14 @@ const RegisterPage = () => {
     }
 
     try {
+      console.log("Intentando registrar al usuario...");
       const result = await signUp(user.email, user.password, {
         name: user.name,
         role: "student"
       });
       
       if (result.error) {
+        console.error("Error en signUp:", result.error);
         let errorMessage;
         switch (result.error.code) {
           case 'auth/email-already-in-use':
@@ -55,9 +58,11 @@ const RegisterPage = () => {
         }
         setError(errorMessage);
       } else {
+        console.log("Usuario registrado exitosamente:", result);
         navigate('/');
       }
     } catch (error) {
+      console.error("Error en handleSubmit:", error);
       setError('Error al crear la cuenta. Por favor, intenta de nuevo.');
     } finally {
       setIsSubmitting(false);
@@ -67,7 +72,6 @@ const RegisterPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 sm:p-6 md:p-8 lg:p-12 flex items-center justify-center">
       <div className="w-full max-w-5xl bg-white rounded-3xl shadow-lg overflow-hidden flex flex-col md:flex-row border-2 border-black">
-        {/* Lado izquierdo - Imagen */}
         <div className="w-full md:w-1/2 h-48 md:h-auto bg-gray-800 flex items-center justify-center">
           <img
             src="/api/placeholder/800/600"
@@ -76,7 +80,6 @@ const RegisterPage = () => {
           />
         </div>
 
-        {/* Lado derecho - Formulario */}
         <div className="w-full md:w-3/4 p-6 sm:p-8 md:p-12">
           <div className="max-w-md mx-auto">
             <h1 className="text-2xl sm:text-3xl font-bold mb-2 text-gray-800">
@@ -94,7 +97,6 @@ const RegisterPage = () => {
 
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-4">
-                {/* Campo Nombre */}
                 <div>
                   <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
                     Nombre completo
@@ -118,7 +120,6 @@ const RegisterPage = () => {
                   </div>
                 </div>
 
-                {/* Campo Email */}
                 <div>
                   <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
                     Email
@@ -143,7 +144,6 @@ const RegisterPage = () => {
                   </div>
                 </div>
 
-                {/* Campo Contraseña */}
                 <div>
                   <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
                     Contraseña

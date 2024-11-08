@@ -1,22 +1,19 @@
-import React from 'react';
-import { useAuth } from '../context/authContext';
-import { 
-  User, 
-  Mail, 
-  Book, 
-  Calendar,
-  GraduationCap,
+import {
+  Book,
+  BookOpen,
   Building2,
-  Users,
+  Calendar,
   ChartBar,
   Clock,
-  ArrowLeft,
+  GraduationCap,
+  Mail,
   Medal,
   Target,
-  Star,
-  BookOpen
+  User,
+  Users
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import React from 'react';
+import { useAuth } from '../context/authContext';
 
 const StatsCard = ({ icon: Icon, title, value, description }) => (
   <div className="bg-white rounded-3xl border border-black p-6 hover:shadow-lg transition-all duration-500">

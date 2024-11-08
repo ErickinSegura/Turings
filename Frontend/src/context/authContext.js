@@ -1,13 +1,12 @@
-import { createContext, useContext, useEffect, useState } from "react";
 import {
   createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
   onAuthStateChanged,
+  signInWithEmailAndPassword,
   signOut
 } from "firebase/auth";
-import { auth } from "../firebase";
-import { db } from "../firebase";
-import { doc, setDoc, getDoc, serverTimestamp } from "firebase/firestore";
+import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
+import { createContext, useContext, useEffect, useState } from "react";
+import { auth, db } from "../firebase";
 
 const AuthContext = createContext();
 
@@ -23,11 +22,12 @@ function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const createUserDocument = async (uid, userData) => {
+  // Función para crear el documento de usuario en Firestore
+  const createUserDocument = async (matricula, userData) => {
     try {
-      const userRef = doc(db, "users", uid);
+      const userRef = doc(db, "users", matricula); // Usa la matrícula como ID del documento
       await setDoc(userRef, {
-        uid,
+        uid: matricula, // Guarda la matrícula como UID en el documento
         email: userData.email,
         name: userData.name,
         role: userData.role || "student",
@@ -41,13 +41,20 @@ function AuthProvider({ children }) {
     }
   };
 
+  // Función de registro de usuario
   const signUp = async (email, password, additionalData = {}) => {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      await createUserDocument(userCredential.user.uid, {
+
+      // Extrae la matrícula del correo institucional
+      const matricula = email.split("@")[0];
+
+      // Crea el documento en Firestore usando la matrícula como ID
+      await createUserDocument(matricula,userCredential.user.uid, {
         email,
         ...additionalData
       });
+
       return userCredential;
     } catch (error) {
       return { error };
@@ -68,7 +75,7 @@ function AuthProvider({ children }) {
     } catch (error) {
       return { error }
     }
-  }
+  };
 
   const logOut = async () => {
     try {
@@ -77,7 +84,7 @@ function AuthProvider({ children }) {
     } catch (error) {
       console.error("Error signing out:", error);
     }
-  }
+  };
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -112,4 +119,5 @@ function AuthProvider({ children }) {
   )
 }
 
-export { AuthProvider, useAuth, AuthContext };
+export { AuthContext, AuthProvider, useAuth };
+

@@ -1,15 +1,15 @@
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
-import NavBar from './components/NavBar';
-import TiendaPage from './components/TiendaPage';
-import PuntajesPage from './components/PuntajesPage';
+import { Route, BrowserRouter as Router, Routes, useLocation } from 'react-router-dom';
 import HomePage from './components/HomePage';
-import { AuthProvider } from './context/authContext';
-import RegisterPage from './components/RegisterPage';
 import LoginPage from './components/LoginPage';
-import QRPage from './components/QRPage';
-import StudentProfilePage from './components/StudentProfilePage';
+import NavBar from './components/NavBar';
 import TeacherProfilePage from './components/ProfessorProfilePage';
 import ProtectedRoute from './components/ProtectedRoutes';
+import PuntajesPage from './components/PuntajesPage';
+import QRPage from './components/QRPage';
+import RegisterPage from './components/RegisterPage';
+import StudentProfilePage from './components/StudentProfilePage';
+import TiendaPage from './components/TiendaPage';
+import { AuthProvider } from './context/authContext';
 
 function App() {
   return (
