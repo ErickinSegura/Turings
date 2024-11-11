@@ -50,7 +50,7 @@ function AuthProvider({ children }) {
       const matricula = email.split("@")[0];
 
       // Crea el documento en Firestore usando la matrícula como ID
-      await createUserDocument(matricula,userCredential.user.uid, {
+      await createUserDocument(matricula, {
         email,
         ...additionalData
       });
@@ -61,21 +61,25 @@ function AuthProvider({ children }) {
     }
   };
 
+
   const logIn = async (email, password) => {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const userDoc = await getDoc(doc(db, "users", userCredential.user.uid));
+      const userDoc = await getDoc(doc(db, "users", email.split("@")[0])); // Usar el ID correcto
       if (userDoc.exists()) {
         setUser({
-          ...userCredential.user,
+          uid: userCredential.user.uid,
+          email: userCredential.user.email,
+          name: userDoc.data().name, // Asegúrate de que Firestore tiene este campo
           ...userDoc.data()
         });
       }
       return userCredential;
     } catch (error) {
-      return { error }
+      return { error };
     }
   };
+  
 
   const logOut = async () => {
     try {

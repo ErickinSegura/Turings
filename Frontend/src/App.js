@@ -9,7 +9,10 @@ import QRPage from './components/QRPage';
 import RegisterPage from './components/RegisterPage';
 import StudentProfilePage from './components/StudentProfilePage';
 import TiendaPage from './components/TiendaPage';
+import CreateGroupPage from './components/CreateGroup'; 
 import { AuthProvider } from './context/authContext';
+import { GroupsProvider } from './context/groupsContext'; 
+import StudentsListPage from './components/StudentsListPage';
 
 function App() {
   return (
@@ -23,7 +26,7 @@ function App() {
 
 function AppContent() {
   const location = useLocation();
-
+  
   return (
     <div className="min-h-screen bg-gray-50">
       {location.pathname !== '/login' && location.pathname !== '/register' && <NavBar />}
@@ -33,37 +36,39 @@ function AppContent() {
             <HomePage />
           </ProtectedRoute>
         } />
-        
         <Route path="/tienda" element={
           <ProtectedRoute>
             <TiendaPage />
           </ProtectedRoute>
         } />
-
         <Route path="/puntajes" element={
           <ProtectedRoute>
             <PuntajesPage />
           </ProtectedRoute>
         } />
-
         <Route path="/perfil" element={
           <ProtectedRoute>
             <TeacherProfilePage />
           </ProtectedRoute>
         } />
-
         <Route path="/perfil-estudiante" element={
           <ProtectedRoute>
             <StudentProfilePage />
           </ProtectedRoute>
         } />
-
         <Route path="/qr" element={
           <ProtectedRoute>
             <QRPage />
           </ProtectedRoute>
         } />
-
+        <Route path="/crear-grupo" element={
+          <ProtectedRoute>
+            <GroupsProvider>
+              <CreateGroupPage />
+            </GroupsProvider>
+          </ProtectedRoute>
+        } />
+        <Route path="/estudiantes" element={<StudentsListPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
       </Routes>

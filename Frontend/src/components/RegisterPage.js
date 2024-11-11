@@ -26,13 +26,20 @@ const RegisterPage = () => {
     e.preventDefault();
     setError(null);
     setIsSubmitting(true);
-
+  
     if (!user.email || !user.password || !user.name) {
       setError('Por favor completa todos los campos');
       setIsSubmitting(false);
       return;
     }
-
+  
+    // Verificar si el correo termina en '@tec.mx'
+    if (!user.email.endsWith('@tec.mx')) {
+      setError('El correo debe ser institucional (@tec.mx)');
+      setIsSubmitting(false);
+      return;
+    }
+  
     try {
       console.log("Intentando registrar al usuario...");
       const result = await signUp(user.email, user.password, {
@@ -68,6 +75,7 @@ const RegisterPage = () => {
       setIsSubmitting(false);
     }
   };
+  
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 sm:p-6 md:p-8 lg:p-12 flex items-center justify-center">
@@ -86,7 +94,7 @@ const RegisterPage = () => {
               Crear cuenta
             </h1>
             <p className="text-gray-600 mb-6 sm:mb-8">
-              Completa tus datos para registrarte
+              Completa tus datos para registrarte. Usa tu correo institucional.
             </p>
 
             {error && (
@@ -115,7 +123,7 @@ const RegisterPage = () => {
                       value={user.name}
                       onChange={handleChanges}
                       disabled={isSubmitting}
-                      className="pl-10 w-full px-3 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                      className="pl-10 w-full px-3 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent bg-white"
                     />
                   </div>
                 </div>
@@ -135,11 +143,11 @@ const RegisterPage = () => {
                       type="email"
                       name="email"
                       id="email"
-                      placeholder="tu@ejemplo.com"
+                      placeholder="matricula@tec.mx"
                       value={user.email}
                       onChange={handleChanges}
                       disabled={isSubmitting}
-                      className="pl-10 w-full px-3 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                      className="pl-10 w-full px-3 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent bg-white"
                     />
                   </div>
                 </div>
@@ -162,7 +170,7 @@ const RegisterPage = () => {
                       value={user.password}
                       onChange={handleChanges}
                       disabled={isSubmitting}
-                      className="pl-10 w-full px-3 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                      className="pl-10 w-full px-3 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent bg-white"
                     />
                   </div>
                 </div>

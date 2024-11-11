@@ -14,25 +14,34 @@ import {
 } from 'lucide-react';
 import React from 'react';
 import { useAuth } from '../context/authContext';
+import { Link } from 'react-router-dom';
 
-const StatsCard = ({ icon: Icon, title, value, description }) => (
-  <div className="bg-white rounded-3xl border border-black p-6 hover:shadow-lg transition-all duration-500">
-    <div className="flex items-center space-x-4 mb-4">
-      <div className="p-3 bg-gray-50 rounded-xl">
-        <Icon className="w-6 h-6 text-gray-700" />
+const StatsCard = ({ icon: Icon, title, value, description, to }) => {
+  const content = (
+    <div className="bg-white rounded-3xl border border-black p-6 hover:shadow-lg transition-all duration-500 cursor-pointer">
+      <div className="flex items-center space-x-4 mb-4">
+        <div className="p-3 bg-gray-800 rounded-xl">
+          <Icon className="w-6 h-6 text-gray-50" />
+        </div>
+        <h3 className="text-xl font-bold text-gray-900">{title}</h3>
       </div>
-      <h3 className="text-xl font-bold text-gray-900">{title}</h3>
+      <p className="text-3xl font-semibold text-gray-900 mb-2">{value}</p>
+      <p className="text-gray-500 text-sm">{description}</p>
     </div>
-    <p className="text-3xl font-semibold text-gray-900 mb-2">{value}</p>
-    <p className="text-gray-500 text-sm">{description}</p>
-  </div>
-);
+  );
+
+  return to ? (
+    <Link to={to}>{content}</Link>
+  ) : (
+    content
+  );
+};
 
 const CourseCard = ({ course }) => (
   <div className="bg-white rounded-3xl border border-black shadow-sm p-6 mb-6">
     <div className="flex items-center mb-4">
-      <div className="p-3 bg-gray-50 rounded-xl mr-4">
-        <BookOpen className="w-6 h-6 text-gray-700" />
+      <div className="p-3 bg-gray-800 rounded-xl mr-4">
+        <BookOpen className="w-6 h-6 text-gray-50" />
       </div>
       <h3 className="text-xl font-bold text-gray-900">{course.name}</h3>
     </div>
@@ -54,13 +63,6 @@ const CourseCard = ({ course }) => (
             <div className="flex flex-col md:flex-row gap-2 items-start md:items-center">
               <span className="px-4 py-2 rounded-full bg-blue-50 text-blue-700 font-medium">
                 {group.students} estudiantes
-              </span>
-              <span className={`px-4 py-2 rounded-full ${
-                group.progress >= 75 ? 'bg-green-50 text-green-700' :
-                group.progress >= 50 ? 'bg-yellow-50 text-yellow-700' :
-                'bg-red-50 text-red-700'
-              } font-medium`}>
-                {group.progress}% completado
               </span>
             </div>
           </div>
@@ -139,7 +141,7 @@ const TeacherProfilePage = () => {
   };
 
   // Calcular estadísticas
-  const totalStudents = teacherInfo.courses.reduce((total, course) => 
+  const totalStudents = teacherInfo.courses.reduce((total, course) =>
     total + course.groups.reduce((sum, group) => sum + group.students, 0), 0
   );
 
@@ -167,8 +169,8 @@ const TeacherProfilePage = () => {
         {/* Profile Card */}
         <div className="bg-white rounded-3xl border border-black shadow-sm p-8 mb-12">
           <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
-            <div className="p-4 bg-gray-50 rounded-2xl">
-              <GraduationCap className="w-16 h-16 text-gray-700" />
+            <div className="p-4 bg-gray-800 rounded-2xl">
+              <GraduationCap className="w-16 h-16 text-gray-50" />
             </div>
             <div className="flex-1">
               <h2 className="text-2xl font-bold text-gray-900 mb-4">
@@ -193,7 +195,7 @@ const TeacherProfilePage = () => {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
           <StatsCard
             icon={BookOpen}
             title="Grupos"
@@ -205,18 +207,7 @@ const TeacherProfilePage = () => {
             title="Estudiantes"
             value={totalStudents}
             description="Estudiantes totales"
-          />
-          <StatsCard
-            icon={Clock}
-            title="Tareas"
-            value={teacherInfo.stats.activeAssignments}
-            description="Tareas activas"
-          />
-          <StatsCard
-            icon={ChartBar}
-            title="Progreso"
-            value={`${teacherInfo.stats.averageProgress}%`}
-            description="Promedio general"
+            to="/estudiantes" 
           />
         </div>
 
@@ -229,14 +220,13 @@ const TeacherProfilePage = () => {
 
         {/* Action Buttons */}
         <div className="mt-8 flex flex-wrap justify-center gap-4">
-          <button className="bg-blue-600 text-white px-6 py-3 rounded-2xl hover:bg-blue-700 transition-colors flex items-center">
+          <Link
+            to="/crear-grupo"
+            className="bg-blue-600 text-white px-6 py-3 rounded-2xl hover:bg-blue-700 transition-colors flex items-center"
+          >
             <User className="w-5 h-5 mr-2" />
             Editar Perfil
-          </button>
-          <button className="bg-emerald-600 text-white px-6 py-3 rounded-2xl hover:bg-emerald-700 transition-colors flex items-center">
-            <Book className="w-5 h-5 mr-2" />
-            Gestionar Grupos
-          </button>
+          </Link>
         </div>
       </div>
     </div>
