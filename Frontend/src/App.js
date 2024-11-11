@@ -13,6 +13,9 @@ import CreateGroupPage from './components/CreateGroup';
 import { AuthProvider } from './context/authContext';
 import { GroupsProvider } from './context/groupsContext'; 
 import StudentsListPage from './components/StudentsListPage';
+import StudentDetailPage from './components/StudentDetailPage';
+import GroupDetailView from './components/GroupDetailView';
+
 
 function App() {
   return (
@@ -69,6 +72,8 @@ function AppContent() {
           </ProtectedRoute>
         } />
         <Route path="/estudiantes" element={<StudentsListPage />} />
+        <Route path="/estudiantes/:studentId" element={<StudentDetailPage />} />
+        <Route path="/grupos/:groupId" element={<GroupDetailView />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
       </Routes>

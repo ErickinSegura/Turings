@@ -21,10 +21,12 @@ import {
   getDoc
 } from 'firebase/firestore';
 import { db } from '../firebase';
+import { useNavigate } from 'react-router-dom';
 
 const STUDENTS_PER_PAGE = 10;
 
 const StudentsListPage = () => {
+  const navigate = useNavigate();
   const [students, setStudents] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
@@ -196,9 +198,10 @@ const StudentsListPage = () => {
 
     return students.map((student) => (
       <div
-        key={student.id}
-        className="bg-white rounded-3xl border border-black p-6 hover:shadow-lg transition-all duration-500"
-      >
+      key={student.id}
+      className="bg-white rounded-3xl border border-black p-6 hover:shadow-lg transition-all duration-500 cursor-pointer"
+      onClick={() => navigate(`/estudiantes/${student.id}`)}
+    >
         <div className="flex flex-col md:flex-row gap-6">
           <div className="p-4 bg-gray-800 rounded-xl">
             <GraduationCap className="w-12 h-12 text-gray-50" />
