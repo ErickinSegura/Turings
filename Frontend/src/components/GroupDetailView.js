@@ -1,4 +1,7 @@
 import React from 'react';
+import { useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { useGroupDetails } from '../hooks/UseGroupDetails';
 import {
   Users,
   Trophy,
@@ -6,42 +9,89 @@ import {
   ArrowLeft,
   GraduationCap,
   Mail,
-  Hash
+  Hash,
+  Coins,
+  Terminal,
+  ShoppingBag,
 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
 
-// Default empty group structure
-const defaultGroup = {
-  id: '',
-  groupNumber: '',
-  schedule: '',
-  classroom: '',
-  students: []
-};
-
-const Card = ({ children, className = "" }) => (
-  <div className={`bg-white rounded-xl border border-gray-200 shadow-sm ${className}`}>
-    {children}
+const StatsCard = ({ icon: Icon, title, value, subtitle }) => (
+  <div className="bg-white rounded-3xl border border-black p-6 hover:shadow-lg transition-all duration-500">
+    <div className="flex items-center mb-4">
+      <div className="p-3 bg-gray-800 rounded-2xl mr-4">
+        <Icon className="w-6 h-6 text-gray-50" />
+      </div>
+      <div>
+        <p className="text-gray-500 text-sm">{title}</p>
+        <h3 className="text-2xl font-semibold text-gray-900">{value}</h3>
+        {subtitle && <p className="text-gray-500 text-sm mt-1">{subtitle}</p>}
+      </div>
+    </div>
   </div>
 );
 
-const GroupDetailView = ({ group = defaultGroup }) => {
-  const navigate = useNavigate();
+const StudentCard = ({ student }) => (
+  <div className="group bg-white rounded-2xl overflow-hidden hover:shadow-md transition-all duration-500 p-5">
+    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div className="flex items-center space-x-4">
+        <div className="p-3 bg-gray-800 rounded-2xl">
+          <GraduationCap className="w-6 h-6 text-gray-50" />
+        </div>
+        <div>
+          <h3 className="font-medium text-gray-900">{student?.name || 'Sin nombre'}</h3>
+          <div className="flex items-center gap-4 text-sm text-gray-500">
+            <span className="flex items-center">
+              <Hash className="w-4 h-4 mr-1" />
+              {student?.id || 'N/A'}
+            </span>
+            <span className="flex items-center">
+              <Mail className="w-4 h-4 mr-1" />
+              {student?.email || 'Sin correo'}
+            </span>
+          </div>
+        </div>
+      </div>
+      <div className="flex items-center gap-4">
+        <span className="inline-flex items-center px-4 py-2 rounded-full bg-gray-800 text-gray-50 group-hover:bg-gray-700 transition-colors">
+          <Trophy className="w-4 h-4 mr-2" />
+          {student?.turingBalance || 0} τ
+        </span>
+      </div>
+    </div>
+  </div>
+);
 
-  // Safely calculate average Turing score with null checks
-  const averageTuringScore = React.useMemo(() => {
+const GroupDetailView = () => {
+  const { groupId } = useParams();
+  const navigate = useNavigate();
+  const { group, loading, error } = useGroupDetails(groupId);
+
+  const totalTuringBalance = React.useMemo(() => {
     if (!group?.students?.length) return 0;
-    const total = group.students.reduce((acc, student) => 
-      acc + (typeof student?.turingScore === 'number' ? student.turingScore : 0), 0
+    return group.students.reduce((acc, student) =>
+      acc + (typeof student?.turingBalance === 'number' ? student.turingBalance : 0), 0
     );
-    return (total / group.students.length).toFixed(1);
   }, [group?.students]);
 
-  // Early return if group is still undefined (shouldn't happen with default value)
-  if (!group) {
+  const averageTuringBalance = React.useMemo(() => {
+    if (!group?.students?.length) return 0;
+    return totalTuringBalance / group.students.length;
+  }, [totalTuringBalance, group?.students]);
+
+  const groupNumber = group?.name?.split('-')[1] || 'Sin número';
+
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
-        <div className="text-gray-600">No se encontraron datos del grupo</div>
+        <div className="text-gray-600">Cargando datos del grupo...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
+        <div className="text-red-600">Error: {error}</div>
       </div>
     );
   }
@@ -49,110 +99,89 @@ const GroupDetailView = ({ group = defaultGroup }) => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <div className="max-w-7xl mx-auto px-6 py-12">
-        {/* Header with Back Button */}
-        <div className="flex items-center mb-8">
-          <button
-            onClick={() => navigate(-1)}
-            className="mr-4 p-2 hover:bg-gray-100 rounded-full transition-colors"
-          >
-            <ArrowLeft className="w-6 h-6" />
-          </button>
+        {/* Header */}
+        <div className="flex items-center mb-12">
           <div>
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">
-              Grupo {group.groupNumber || 'Sin número'}
+            <h1 className="text-4xl font-bold text-gray-900 mb-3">
+              Grupo {groupNumber}
             </h1>
-            <p className="text-gray-500">
-              {group.schedule || 'Horario no definido'} • Sala {group.classroom || 'Sin asignar'}
+            <p className="text-gray-500 text-lg">
+              {group?.schedule || 'Horario no definido'} • Sala {group?.classroom || 'Sin asignar'}
             </p>
           </div>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <Card>
-            <div className="p-6">
-              <div className="flex items-center mb-4">
-                <div className="p-2 bg-blue-100 rounded-lg mr-4">
-                  <Users className="w-6 h-6 text-blue-700" />
-                </div>
-                <h3 className="text-lg font-semibold">Estudiantes</h3>
-              </div>
-              <div className="text-3xl font-bold">{group.students?.length || 0}</div>
-              <p className="text-gray-500 text-sm">Total de estudiantes</p>
-            </div>
-          </Card>
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+          <StatsCard
+            icon={Users}
+            title="Total de Estudiantes"
+            value={group?.students?.length || 0}
+          />
+          <StatsCard
+            icon={Coins}
+            title="Total Turings"
+            value={`${totalTuringBalance} τ`}
+            subtitle="Balance del grupo"
+          />
+          <StatsCard
+            icon={Coins}
+            title="Promedio Turings"
+            value={`${averageTuringBalance.toFixed(2)} τ`}
+            subtitle="Balance promedio"
+          />
+        </div>
 
-          <Card>
-            <div className="p-6">
-              <div className="flex items-center mb-4">
-                <div className="p-2 bg-yellow-100 rounded-lg mr-4">
-                  <Trophy className="w-6 h-6 text-yellow-700" />
-                </div>
-                <h3 className="text-lg font-semibold">Promedio Turing</h3>
-              </div>
-              <div className="text-3xl font-bold">{averageTuringScore}</div>
-              <p className="text-gray-500 text-sm">Puntos promedio</p>
-            </div>
-          </Card>
+        {/* Actions */}
+        <div className="flex gap-4 mb-12">
+          <button
+            onClick={() => navigate(`/grupos/${group.id}/editar`)}
+            className="flex-1 bg-white text-gray-800 border border-black px-6 py-4 rounded-3xl hover:shadow-lg transition-all duration-500 flex items-center justify-center gap-2"
+          >
+            <Terminal className="w-5 h-5" />
+            Editar Grupo
+          </button>
+          <button
+            onClick={() => navigate(`/grupos/${group.id}/nueva-actividad`)}
+            className="flex-1 bg-gray-800 text-white px-6 py-4 rounded-3xl hover:shadow-lg transition-all duration-500 flex items-center justify-center gap-2"
+          >
+            <PlusCircle className="w-5 h-5" />
+            Nueva Actividad
+          </button>
 
-          <Card>
-            <div className="p-6">
-              <button
-                onClick={() => navigate(`/grupos/${group.id}/nueva-actividad`)}
-                className="w-full bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
-              >
-                <PlusCircle className="w-5 h-5" />
-                Nueva Actividad
-              </button>
-            </div>
-          </Card>
+          <button
+            onClick={() => navigate(`/grupos/${group.id}/tienda`)}
+            className="flex-1 bg-white text-gray-800 border border-black px-6 py-4 rounded-3xl hover:shadow-lg transition-all duration-500 flex items-center justify-center gap-2"
+          >
+            <ShoppingBag className="w-5 h-5" />
+            Tienda del Grupo
+          </button>
         </div>
 
         {/* Students List */}
-        <Card>
-          <div className="p-6">
-            <h2 className="text-xl font-semibold mb-6">Lista de Estudiantes</h2>
-            <div className="divide-y">
-              {group.students?.length > 0 ? (
-                group.students.map((student) => (
-                  <div
-                    key={student?.id || Math.random()}
-                    className="py-4 flex flex-col md:flex-row md:items-center md:justify-between hover:bg-gray-50 px-4 rounded-lg transition-colors"
-                  >
-                    <div className="flex items-center space-x-4">
-                      <div className="p-2 bg-gray-100 rounded-full">
-                        <GraduationCap className="w-6 h-6 text-gray-600" />
-                      </div>
-                      <div>
-                        <h3 className="font-medium text-gray-900">{student?.name || 'Sin nombre'}</h3>
-                        <div className="flex items-center gap-4 text-sm text-gray-500">
-                          <span className="flex items-center">
-                            <Hash className="w-4 h-4 mr-1" />
-                            {student?.id || 'N/A'}
-                          </span>
-                          <span className="flex items-center">
-                            <Mail className="w-4 h-4 mr-1" />
-                            {student?.email || 'Sin correo'}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="mt-2 md:mt-0">
-                      <span className="inline-flex items-center px-4 py-2 rounded-full bg-blue-50 text-blue-700">
-                        <Trophy className="w-4 h-4 mr-2" />
-                        {student?.turingScore || 0} pts
-                      </span>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className="py-8 text-center text-gray-500">
-                  No hay estudiantes registrados en este grupo
-                </div>
-              )}
+        <div className="bg-white rounded-3xl border border-black p-8">
+          <div className="flex items-center mb-8">
+            <div className="p-3 bg-gray-800 rounded-2xl mr-4">
+              <Users className="w-6 h-6 text-gray-50" />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-gray-900">Lista de Estudiantes</h2>
+              <p className="text-gray-500 text-sm mt-1">Estudiantes registrados en el grupo</p>
             </div>
           </div>
-        </Card>
+
+          <div className="space-y-4">
+            {group?.students?.length > 0 ? (
+              group.students.map((student) => (
+                <StudentCard key={student?.id || Math.random()} student={student} />
+              ))
+            ) : (
+              <div className="py-8 text-center text-gray-500">
+                No hay estudiantes registrados en este grupo
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

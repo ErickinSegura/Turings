@@ -9,9 +9,8 @@ import {
 } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../context/authContext';
-import { useGroups } from '../context/groupsContext';
 import { Link, useNavigate } from 'react-router-dom';
-import { collection, query, where, getDocs } from 'firebase/firestore';
+import { collection, query, getDocs } from 'firebase/firestore';
 import { db } from '../firebase';
 
 const StatsCard = ({ icon: Icon, title, value, description, to }) => {
