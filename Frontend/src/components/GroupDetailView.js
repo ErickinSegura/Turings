@@ -6,7 +6,6 @@ import {
   Users,
   Trophy,
   PlusCircle,
-  ArrowLeft,
   GraduationCap,
   Mail,
   Hash,
