@@ -15,6 +15,7 @@ import { GroupsProvider } from './context/groupsContext';
 import StudentsListPage from './components/StudentsListPage';
 import StudentDetailPage from './components/StudentDetailPage';
 import GroupDetailView from './components/GroupDetailView';
+import CreateActivity from './components/CreateActivity';
 
 
 function App() {
@@ -71,9 +72,16 @@ function AppContent() {
             </GroupsProvider>
           </ProtectedRoute>
         } />
+        <Route path="/grupos/:groupId/nueva-actividad" element={
+          <ProtectedRoute>
+            <CreateActivity />
+          </ProtectedRoute>
+        } 
+/>
         <Route path="/estudiantes" element={<StudentsListPage />} />
         <Route path="/estudiantes/:studentId" element={<StudentDetailPage />} />
         <Route path="/grupos/:groupId" element={<GroupDetailView />} />
+        
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
       </Routes>
