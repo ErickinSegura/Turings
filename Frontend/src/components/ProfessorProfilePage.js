@@ -116,9 +116,11 @@ const TeacherProfilePage = () => {
     fetchGroups();
   }, [user]);
 
-  const totalStudents = groups.reduce((total, course) =>
-    total + course.groups.reduce((sum, group) => sum + (group.studentIds?.length || 0), 0), 0
-  );
+  const totalStudents = groups.reduce((total, course) => {
+    return total + course.groups.reduce((sum, group) => {
+      return sum + (group.studentIds ? group.studentIds.length : 0);
+    }, 0);
+  }, 0);
 
   const totalGroups = groups.reduce((total, course) =>
     total + course.groups.length, 0

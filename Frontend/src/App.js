@@ -15,9 +15,9 @@ import { GroupsProvider } from './context/groupsContext';
 import StudentsListPage from './components/StudentsListPage';
 import StudentDetailPage from './components/StudentDetailPage';
 import GroupDetailView from './components/GroupDetailView';
-import GroupEditView from "./components/GroupEditPage";
 import EditGroupForm from "./components/EditGroupForm";
 import CreateActivity from './components/CreateActivity';
+import GroupShopPage from './components/GroupShopPage';
 
 
 function App() {
@@ -78,8 +78,14 @@ function AppContent() {
           <ProtectedRoute>
             <CreateActivity />
           </ProtectedRoute>
-        } 
-/>
+        }/>
+
+        <Route path="/grupos/:groupId/tienda" element={
+          <ProtectedRoute>
+            <GroupShopPage />
+          </ProtectedRoute>
+        } />
+
         <Route path="/estudiantes" element={<StudentsListPage />} />
         <Route path="/estudiantes/:studentId" element={<StudentDetailPage />} />
         <Route path="/grupos/:groupId" element={<GroupDetailView />} />
