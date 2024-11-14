@@ -12,6 +12,8 @@ import {
   Coins,
   Terminal,
   ShoppingBag,
+  Book,
+  Clock,
 } from 'lucide-react';
 
 const StatsCard = ({ icon: Icon, title, value, subtitle }) => (
@@ -54,6 +56,52 @@ const StudentCard = ({ student }) => (
         <span className="inline-flex items-center px-4 py-2 rounded-full bg-gray-800 text-gray-50 group-hover:bg-gray-700 transition-colors">
           <Trophy className="w-4 h-4 mr-2" />
           {student?.turingBalance || 0} τ
+        </span>
+      </div>
+    </div>
+  </div>
+);
+
+const ActivityCard = ({ activity }) => (
+  <div className="group bg-white rounded-2xl overflow-hidden hover:shadow-md transition-all duration-500 p-5">
+    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div className="flex items-center space-x-4">
+        <div className="p-3 bg-gray-800 rounded-2xl">
+          {activity.type === 'participation' && <Users className="w-6 h-6 text-gray-50" />}
+          {activity.type === 'homework' && <Book className="w-6 h-6 text-gray-50" />}
+          {activity.type === 'project' && <Terminal className="w-6 h-6 text-gray-50" />}
+          {activity.type === 'exam' && <GraduationCap className="w-6 h-6 text-gray-50" />}
+          {activity.type === 'other' && <Trophy className="w-6 h-6 text-gray-50" />}
+        </div>
+        <div>
+          <h3 className="font-medium text-gray-900">{activity.title}</h3>
+          <div className="flex items-center gap-4 text-sm text-gray-500">
+            <span className="flex items-center">
+              <Trophy className="w-4 h-4 mr-1" />
+              {activity.turingPoints} τ
+            </span>
+            {activity.dueDate && (
+              <span className="flex items-center">
+                <Clock className="w-4 h-4 mr-1" />
+                {new Date(activity.dueDate).toLocaleDateString()}
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
+      <div className="flex items-center gap-4">
+        {activity.maxParticipants > 0 && (
+          <span className="inline-flex items-center px-4 py-2 rounded-full bg-gray-100 text-gray-800">
+            <Users className="w-4 h-4 mr-2" />
+            {activity.participants?.length || 0}/{activity.maxParticipants}
+          </span>
+        )}
+        <span className={`inline-flex items-center px-4 py-2 rounded-full ${
+          activity.status === 'active' 
+            ? 'bg-green-100 text-green-800' 
+            : 'bg-gray-100 text-gray-800'
+        }`}>
+          {activity.status === 'active' ? 'Activa' : 'Finalizada'}
         </span>
       </div>
     </div>
@@ -177,6 +225,31 @@ const GroupDetailView = () => {
             ) : (
               <div className="py-8 text-center text-gray-500">
                 No hay estudiantes registrados en este grupo
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Activities List */}
+        <div className="bg-white rounded-3xl border border-black p-8 mt-8">
+          <div className="flex items-center mb-8">
+            <div className="p-3 bg-gray-800 rounded-2xl mr-4">
+              <Trophy className="w-6 h-6 text-gray-50" />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-gray-900">Actividades del Grupo</h2>
+              <p className="text-gray-500 text-sm mt-1">Actividades asignadas a este grupo</p>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            {group?.activities?.length > 0 ? (
+              group.activities.map((activity) => (
+                <ActivityCard key={activity.id} activity={activity} />
+              ))
+            ) : (
+              <div className="py-8 text-center text-gray-500">
+                No hay actividades asignadas a este grupo
               </div>
             )}
           </div>
