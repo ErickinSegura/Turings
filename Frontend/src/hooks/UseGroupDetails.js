@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { doc, onSnapshot, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
+import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../firebase';
 
 export function useGroupDetails(groupId) {
@@ -17,16 +17,14 @@ export function useGroupDetails(groupId) {
         setLoading(true);
         setError(null);
 
-        // Crear una referencia al documento del grupo
-        const groupRef = doc(db, 'groups', groupId);
+        const fetchGroupDetails = async () => {
+            try {
+                // Fetch group data
+                const groupRef = doc(db, 'groups', groupId);
+                const groupDoc = await getDoc(groupRef);
 
-        // Suscribirse a cambios en tiempo real del grupo
-        const unsubscribe = onSnapshot(
-            groupRef,
-            async (groupDoc) => {
                 if (!groupDoc.exists()) {
                     setError('Grupo no encontrado');
-                    setLoading(false);
                     return;
                 }
 
@@ -42,44 +40,40 @@ export function useGroupDetails(groupId) {
                     return;
                 }
 
-                try {
-                    // Obtener datos de estudiantes
-                    const studentsData = await Promise.all(
-                        groupData.studentIds.map(async (studentId) => {
-                            try {
-                                const studentDoc = await getDoc(doc(db, 'users', studentId));
-                                if (!studentDoc.exists()) return null;
-                                return {
-                                    id: studentDoc.id,
-                                    ...studentDoc.data()
-                                };
-                            } catch (err) {
-                                console.error(`Error fetching student ${studentId}:`, err);
-                                return null;
-                            }
-                        })
-                    );
+                // Fetch students data
+                const studentsData = await Promise.all(
+                    (groupData.studentIds || []).map(async (studentId) => {
+                        const studentDoc = await getDoc(doc(db, 'users', studentId));
+                        return studentDoc.exists() ? { id: studentDoc.id, ...studentDoc.data() } : null;
+                    })
+                );
 
-                    setGroup({
-                        ...groupData,
-                        students: studentsData.filter(Boolean) // Eliminar nulls
-                    });
-                } catch (err) {
-                    console.error('Error fetching students:', err);
-                    setError('Error al cargar los estudiantes');
-                } finally {
-                    setLoading(false);
-                }
-            },
-            (err) => {
-                console.error('Error in group subscription:', err);
-                setError(err.message);
+                // Fetch activities data
+                const activitiesQuery = query(
+                    collection(db, 'activities'),
+                    where('groupId', '==', groupId)
+                );
+                const activitiesSnapshot = await getDocs(activitiesQuery);
+                const activitiesData = activitiesSnapshot.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data()
+                }));
+
+                setGroup({
+                    id: groupDoc.id,
+                    ...groupData,
+                    students: studentsData.filter(Boolean),
+                    activities: activitiesData
+                });
+            } catch (err) {
+                console.error('Error fetching group details:', err);
+                setError('Error al cargar los datos del grupo');
+            } finally {
                 setLoading(false);
             }
-        );
+        };
 
-        // Limpiar suscripción cuando el componente se desmonte
-        return () => unsubscribe();
+        fetchGroupDetails();
     }, [groupId]);
 
     return { group, loading, error };
