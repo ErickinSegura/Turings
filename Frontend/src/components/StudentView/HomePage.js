@@ -124,19 +124,12 @@ const HomePage = () => {
             <StatsCard title="Turings Disponibles" value={user?.turingBalance || 0} />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+          <div className="grid grid-cols-1 md:grid-cols-1 gap-8 mb-12">
             <Link to="/register-activity" className="block">
               <ActionCard
                   icon={PlusCircle}
                   title="Registrar Nueva Actividad"
                   description="Documenta tus participaciones para ganar Turings"
-              />
-            </Link>
-            <Link to="/shop" className="block">
-              <ActionCard
-                  icon={ShoppingBag}
-                  title="Visitar Tienda"
-                  description="Explora productos y canjea tus Turings"
               />
             </Link>
           </div>
