@@ -25,7 +25,7 @@ export function GroupsProvider({ children }) {
         setSelectedStudents((prev) => {
           const updatedList = [...prev, studentData];
           return updatedList
-            .filter((s, index, self) => self.findIndex(t => t.id === s.id) === index)
+            .filter((s, index, self) => self.findIndex(t => t.matricula === s.matricula) === index)
             .sort((a, b) => a.name.split(" ")[0].localeCompare(b.name.split(" ")[0]));
         });
 

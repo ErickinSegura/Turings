@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Edit2, Trash2, ShoppingBag, History } from 'lucide-react';
-import useGroupShop from "../hooks/UseGroupShop";
-import useShopTransactions from "../hooks/UseShopTransactions";
-import { useAuth } from "../context/authContext";
+import useGroupShop from "../../hooks/UseGroupShop";
+import useShopTransactions from "../../hooks/UseShopTransactions";
+import { useAuth } from "../../context/authContext";
 
 const Modal = ({ isOpen, onClose, title, children }) => {
     if (!isOpen) return null;
@@ -264,8 +264,6 @@ const Shop = ({ isTeacher = false, groupId }) => {
     const {
         purchaseProduct,
         getGroupTransactions,
-        loading: transactionsLoading,
-        error: transactionsError
     } = useShopTransactions(groupId);
 
     const { user } = useAuth();
@@ -300,6 +298,8 @@ const Shop = ({ isTeacher = false, groupId }) => {
             alert(result.error);
         }
     };
+
+
 
     const handleAddProduct = async () => {
         await addProduct(newProduct);

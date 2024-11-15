@@ -1,7 +1,7 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-import { useGroupDetails } from '../hooks/UseGroupDetails';
+import { useGroupDetails } from '../../hooks/UseGroupDetails';
 import {
   Users,
   Trophy,
@@ -15,6 +15,7 @@ import {
   Book,
   Clock,
 } from 'lucide-react';
+import {useAuth} from "../../context/authContext";
 
 const StatsCard = ({ icon: Icon, title, value, subtitle }) => (
   <div className="bg-white rounded-3xl border border-black p-6 hover:shadow-lg transition-all duration-500">
@@ -112,6 +113,9 @@ const GroupDetailView = () => {
   const { groupId } = useParams();
   const navigate = useNavigate();
   const { group, loading, error } = useGroupDetails(groupId);
+  const { user } = useAuth(); // Añade esta línea
+
+  const isTeacher = user?.role === 'teacher' || user?.isTeacher;
 
   const totalTuringBalance = React.useMemo(() => {
     if (!group?.students?.length) return 0;
@@ -197,10 +201,10 @@ const GroupDetailView = () => {
           </button>
 
           <button
-            onClick={() => navigate(`/grupos/${group.id}/tienda`)}
-            className="flex-1 bg-white text-gray-800 border border-black px-6 py-4 rounded-3xl hover:shadow-lg transition-all duration-500 flex items-center justify-center gap-2"
+              onClick={() => navigate(`/grupos/${group.id}/tienda?role=${isTeacher ? 'teacher' : 'student'}`)}
+              className="flex-1 bg-white text-gray-800 border border-black px-6 py-4 rounded-3xl hover:shadow-lg transition-all duration-500 flex items-center justify-center gap-2"
           >
-            <ShoppingBag className="w-5 h-5" />
+            <ShoppingBag className="w-5 h-5"/>
             Tienda del Grupo
           </button>
         </div>
@@ -209,7 +213,7 @@ const GroupDetailView = () => {
         <div className="bg-white rounded-3xl border border-black p-8">
           <div className="flex items-center mb-8">
             <div className="p-3 bg-gray-800 rounded-2xl mr-4">
-              <Users className="w-6 h-6 text-gray-50" />
+              <Users className="w-6 h-6 text-gray-50"/>
             </div>
             <div>
               <h2 className="text-xl font-bold text-gray-900">Lista de Estudiantes</h2>

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Users, Upload, Search, PlusCircle, X, AlertCircle } from "lucide-react";
-import { useGroups } from "../context/groupsContext";
+import { useGroups } from "../../context/groupsContext";
 
 // Custom Alert Component
 const Alert = ({ children, variant = "error" }) => {

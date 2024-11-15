@@ -1,6 +1,5 @@
 import {
   BookOpen,
-  Building2,
   Calendar,
   GraduationCap,
   Mail,
@@ -8,10 +7,10 @@ import {
   Users
 } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
-import { useAuth } from '../context/authContext';
+import { useAuth } from '../../context/authContext';
 import { Link, useNavigate } from 'react-router-dom';
 import { collection, query, getDocs } from 'firebase/firestore';
-import { db } from '../firebase';
+import { db } from '../../firebase';
 
 const StatsCard = ({ icon: Icon, title, value, description, to }) => {
   const content = (
@@ -170,54 +169,9 @@ const TeacherProfilePage = () => {
                   <Mail className="w-5 h-5 mr-3" />
                   {user?.email}
                 </div>
-                <div className="flex items-center text-gray-600">
-                  <Building2 className="w-5 h-5 mr-3" />
-                  {user?.department || 'Departamento Académico'}
-                </div>
               </div>
             </div>
           </div>
-        </div>
-
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-          <StatsCard
-            icon={BookOpen}
-            title="Grupos"
-            value={totalGroups}
-            description="Grupos activos"
-          />
-          <StatsCard
-            icon={Users}
-            title="Estudiantes"
-            value={totalStudents}
-            description="Estudiantes totales"
-            to="/estudiantes" 
-          />
-        </div>
-
-        {/* Courses Section */}
-        <div className="space-y-6">
-          {groups.length > 0 ? (
-            groups.map((course, index) => (
-              <CourseCard key={index} course={course} />
-            ))
-          ) : (
-            <div className="text-center py-12 text-gray-500">
-              No hay grupos registrados aún
-            </div>
-          )}
-        </div>
-
-        {/* Action Buttons */}
-        <div className="mt-8 flex flex-wrap justify-center gap-4">
-          <Link
-            to="/crear-grupo"
-            className="bg-blue-600 text-white px-6 py-3 rounded-2xl hover:bg-blue-700 transition-colors flex items-center"
-          >
-            <User className="w-5 h-5 mr-2" />
-            Crear Nuevo Grupo
-          </Link>
         </div>
       </div>
     </div>

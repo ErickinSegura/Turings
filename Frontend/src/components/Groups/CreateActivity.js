@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { doc, updateDoc, arrayUnion, collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import { db } from '../firebase';
-import { ArrowLeft, Trophy, Clock, Users } from 'lucide-react';
+import { db } from '../../firebase';
+import { ArrowLeft} from 'lucide-react';
 
 const CreateActivity = () => {
   const { groupId } = useParams();

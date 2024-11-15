@@ -1,100 +1,120 @@
 import { Route, BrowserRouter as Router, Routes, useLocation } from 'react-router-dom';
-import HomePage from './components/HomePage';
+import HomePage from './components/StudentView/HomePage';
 import LoginPage from './components/LoginPage';
-import NavBar from './components/NavBar';
-import TeacherProfilePage from './components/ProfessorProfilePage';
+import NavBar from './components/Basics/NavBar';
+import TeacherProfilePage from './components/TeacherView/ProfessorProfilePage';
 import ProtectedRoute from './components/ProtectedRoutes';
 import PuntajesPage from './components/PuntajesPage';
-import QRPage from './components/QRPage';
+import QRPage from './components/Basics/QRPage';
 import RegisterPage from './components/RegisterPage';
-import StudentProfilePage from './components/StudentProfilePage';
+import StudentProfilePage from './components/StudentView/StudentProfilePage';
 import TiendaPage from './components/TiendaPage';
-import CreateGroupPage from './components/CreateGroup'; 
+import CreateGroupPage from './components/Groups/CreateGroup';
 import { AuthProvider } from './context/authContext';
-import { GroupsProvider } from './context/groupsContext'; 
-import StudentsListPage from './components/StudentsListPage';
-import StudentDetailPage from './components/StudentDetailPage';
-import GroupDetailView from './components/GroupDetailView';
-import EditGroupForm from "./components/EditGroupForm";
-import CreateActivity from './components/CreateActivity';
-import GroupShopPage from './components/GroupShopPage';
-
+import { GroupsProvider } from './context/groupsContext';
+import StudentsListPage from './components/TeacherView/Students/StudentsListPage';
+import StudentDetailPage from './components/TeacherView/Students/StudentDetailPage';
+import GroupDetailView from './components/Groups/GroupDetailView';
+import EditGroupForm from "./components/Groups/EditGroupForm";
+import CreateActivity from './components/Groups/CreateActivity';
+import GroupShopPage from './components/Groups/GroupShopPage';
+import GroupsPage from "./components/TeacherView/GroupsPage";
 
 function App() {
   return (
-    <AuthProvider>
-      <Router>
-        <AppContent />
-      </Router>
-    </AuthProvider>
+      <AuthProvider>
+        <Router>
+          <AppContent />
+        </Router>
+      </AuthProvider>
   );
 }
 
 function AppContent() {
   const location = useLocation();
-  
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      {location.pathname !== '/login' && location.pathname !== '/register' && <NavBar />}
-      <Routes>
-        <Route path="/" element={
-          <ProtectedRoute>
-            <HomePage />
-          </ProtectedRoute>
-        } />
-        <Route path="/tienda" element={
-          <ProtectedRoute>
-            <TiendaPage />
-          </ProtectedRoute>
-        } />
-        <Route path="/puntajes" element={
-          <ProtectedRoute>
-            <PuntajesPage />
-          </ProtectedRoute>
-        } />
-        <Route path="/perfil" element={
-          <ProtectedRoute>
-            <TeacherProfilePage />
-          </ProtectedRoute>
-        } />
-        <Route path="/perfil-estudiante" element={
-          <ProtectedRoute>
-            <StudentProfilePage />
-          </ProtectedRoute>
-        } />
-        <Route path="/qr" element={
-          <ProtectedRoute>
-            <QRPage />
-          </ProtectedRoute>
-        } />
-        <Route path="/crear-grupo" element={
-          <ProtectedRoute>
-            <GroupsProvider>
-              <CreateGroupPage />
-            </GroupsProvider>
-          </ProtectedRoute>
-        } />
-        <Route path="/grupos/:groupId/nueva-actividad" element={
-          <ProtectedRoute>
-            <CreateActivity />
-          </ProtectedRoute>
-        }/>
+      <div className="min-h-screen bg-gray-50">
+        {location.pathname !== '/login' && location.pathname !== '/register' && <NavBar />}
+        <Routes>
+          {/* Rutas accesibles para cualquier usuario autenticado */}
+          <Route path="/" element={
+            <ProtectedRoute>
+              <HomePage />
+            </ProtectedRoute>
+          } />
+          <Route path="/tienda" element={
+            <ProtectedRoute>
+              <TiendaPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/puntajes" element={
+            <ProtectedRoute>
+              <PuntajesPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/perfil-estudiante" element={
+            <ProtectedRoute>
+              <StudentProfilePage />
+            </ProtectedRoute>
+          } />
 
-        <Route path="/grupos/:groupId/tienda" element={
-          <ProtectedRoute>
-            <GroupShopPage />
-          </ProtectedRoute>
-        } />
+          {/* Rutas exclusivas para profesores */}
+          <Route path="/perfil" element={
+            <ProtectedRoute allowedRoles={['teacher']}>
+              <TeacherProfilePage />
+            </ProtectedRoute>
+          } />
+            <Route path="/grupos" element={
+                <ProtectedRoute allowedRoles={['teacher']}>
+                    <GroupsPage />
+                </ProtectedRoute>
+            } />
+          <Route path="/crear-grupo" element={
+            <ProtectedRoute allowedRoles={['teacher']}>
+              <GroupsProvider>
+                <CreateGroupPage />
+              </GroupsProvider>
+            </ProtectedRoute>
+          } />
+          <Route path="/grupos/:groupId/nueva-actividad" element={
+            <ProtectedRoute allowedRoles={['teacher']}>
+              <CreateActivity />
+            </ProtectedRoute>
+          } />
+          <Route path="/estudiantes" element={
+            <ProtectedRoute allowedRoles={['teacher']}>
+              <StudentsListPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/estudiantes/:studentId" element={
+            <ProtectedRoute allowedRoles={['teacher']}>
+              <StudentDetailPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/grupos/:groupId" element={
+            <ProtectedRoute allowedRoles={['teacher']}>
+              <GroupDetailView />
+            </ProtectedRoute>
+          } />
+          <Route path="/grupos/:groupId/editar" element={
+            <ProtectedRoute allowedRoles={['teacher']}>
+              <EditGroupForm />
+            </ProtectedRoute>
+          } />
 
-        <Route path="/estudiantes" element={<StudentsListPage />} />
-        <Route path="/estudiantes/:studentId" element={<StudentDetailPage />} />
-        <Route path="/grupos/:groupId" element={<GroupDetailView />} />
-        
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/grupos/:groupId/editar" element={<EditGroupForm />} />
-        <Route path="/register" element={<RegisterPage />} />
-      </Routes>
-    </div>
+            {/* Rutas exclusivas para grupos */}
+            <Route path="/grupos/:groupId/tienda" element={
+              <ProtectedRoute allowedRoles={['teacher', 'student']}>
+                <GroupShopPage />
+              </ProtectedRoute>
+            } />
+
+          {/* Rutas públicas (no autenticación necesaria) */}
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+        </Routes>
+      </div>
   );
 }
 

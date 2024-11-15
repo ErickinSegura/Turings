@@ -1,10 +1,7 @@
 import { useState } from 'react';
 import {
     collection,
-    addDoc,
-    updateDoc,
     doc,
-    getDoc,
     getDocs,
     query,
     where,

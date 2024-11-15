@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { doc, updateDoc, getDoc, collection, getDocs } from 'firebase/firestore';
-import { db } from '../firebase';
+import { db } from '../../firebase';
 import { ArrowLeft, Save, Clock, Search, Users, Plus, X, UserPlus, UserMinus } from 'lucide-react';
 
 const DAYS = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
@@ -106,16 +106,47 @@ const EditGroupForm = () => {
     setSaveStatus(null);
 
     try {
+      // 1. Obtener los IDs de estudiantes actuales del grupo
       const groupRef = doc(db, 'groups', groupId);
+      const groupDoc = await getDoc(groupRef);
+      const currentStudentIds = groupDoc.exists() ? (groupDoc.data().studentIds || []) : [];
+
+      // 2. Identificar estudiantes agregados y removidos
+      const studentsToAdd = formData.studentIds.filter(id => !currentStudentIds.includes(id));
+      const studentsToRemove = currentStudentIds.filter(id => !formData.studentIds.includes(id));
+
+      // 3. Actualizar el grupo primero
       await updateDoc(groupRef, {
-        ...formData,
+        name: formData.name,
+        classroom: formData.classroom,
+        studentIds: formData.studentIds,
         schedule: JSON.stringify(selectedSchedule),
       });
+
+      // 4. Actualizar los documentos de los estudiantes
+      const updatePromises = [
+        // Agregar groupId a nuevos estudiantes
+        ...studentsToAdd.map(studentId =>
+            updateDoc(doc(db, 'users', studentId), {
+              groupId: groupId
+            })
+        ),
+        // Remover groupId de estudiantes eliminados
+        ...studentsToRemove.map(studentId =>
+            updateDoc(doc(db, 'users', studentId), {
+              groupId: null  // o "" dependiendo de tu preferencia
+            })
+        )
+      ];
+
+      // 5. Esperar a que todas las actualizaciones se completen
+      await Promise.all(updatePromises);
+
       setSaveStatus('Grupo actualizado exitosamente');
       navigate(`/grupos/${groupId}`);
     } catch (err) {
       console.error('Error updating group:', err);
-      setSaveStatus('Error al actualizar el grupo');
+      setSaveStatus(`Error al actualizar el grupo: ${err.message}`);
     } finally {
       setLoading(false);
     }
@@ -125,9 +156,6 @@ const EditGroupForm = () => {
       <div className="min-h-screen bg-gray-50 flex flex-col items-center">
         <div className="w-full max-w-3xl p-6">
           <div className="flex items-center mb-4">
-            <button onClick={() => navigate(-1)} className="mr-4 p-2 rounded-full hover:bg-gray-200">
-              <ArrowLeft className="w-6 h-6" />
-            </button>
             <h1 className="text-2xl font-bold">Editar Grupo</h1>
           </div>
 

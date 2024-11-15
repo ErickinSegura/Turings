@@ -1,10 +1,12 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
-import { useGroupDetails } from '../hooks/UseGroupDetails';
-import GroupShop from '../components/GroupShop';
+import { useParams, useSearchParams } from 'react-router-dom';
+import { useGroupDetails } from '../../hooks/UseGroupDetails';
+import GroupShop from './GroupShop';
 
 const GroupShopPage = () => {
     const { groupId } = useParams();
+    const [searchParams] = useSearchParams();
+    const isTeacher = searchParams.get('role') === 'teacher';
     const { loading, error } = useGroupDetails(groupId);
 
     if (loading) {
@@ -23,9 +25,7 @@ const GroupShopPage = () => {
         );
     }
 
-    return (
-            <GroupShop groupId={groupId} />
-    );
+    return <GroupShop groupId={groupId} isTeacher={isTeacher} />;
 };
 
 export default GroupShopPage;

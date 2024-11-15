@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { doc, getDoc } from 'firebase/firestore';
-import { db } from '../firebase';
+import { db } from '../../../firebase';
 import {
   ArrowLeft,
   GraduationCap,
@@ -93,13 +93,6 @@ const StudentDetailPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <div className="max-w-5xl mx-auto px-6 py-12">
-        <button
-          onClick={() => navigate('/students')}
-          className="flex items-center text-gray-600 hover:text-gray-900 mb-8 transition-colors"
-        >
-          <ArrowLeft className="w-5 h-5 mr-2" />
-          Volver a la lista
-        </button>
 
         <div className="bg-white rounded-3xl border border-black p-8 shadow-sm">
           <div className="flex flex-col md:flex-row gap-8">
@@ -118,7 +111,7 @@ const StudentDetailPage = () => {
                     <Building2 className="w-5 h-5 mr-3 flex-shrink-0" />
                     <div>
                       <p className="text-sm text-gray-500">Matrícula</p>
-                      <p className="font-medium">{student.id}</p>
+                      <p className="font-medium">{student.matricula}</p>
                     </div>
                   </div>
 
