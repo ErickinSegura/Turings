@@ -34,7 +34,13 @@ const NavBar = () => {
       return [
         { label: 'Inicio', to: '/', onClick: () => navigate('/') },
         { label: 'Tienda', onClick: handleStoreNavigation },
-        { label: 'Puntajes', to: '/puntajes', onClick: () => navigate('/puntajes') },
+        { label: 'Puntajes', onClick: () => {
+            if (user.groupId) {
+              navigate(`/grupos/${user.groupId}/leaderboard`);
+            } else {
+              navigate('/puntajes');
+            }
+          }},
       ];
     }
     if (user?.role === 'teacher') {

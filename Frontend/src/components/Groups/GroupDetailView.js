@@ -1,6 +1,6 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useGroupDetails } from '../../hooks/UseGroupDetails';
 import {
   Users,
@@ -12,7 +12,6 @@ import {
   Coins,
   Terminal,
   ShoppingBag,
-  Book,
   Clock,
 } from 'lucide-react';
 import {useAuth} from "../../context/authContext";
@@ -33,7 +32,7 @@ const StatsCard = ({ icon: Icon, title, value, subtitle }) => (
 );
 
 const StudentCard = ({ student }) => (
-  <div className="group bg-white rounded-2xl overflow-hidden hover:shadow-md transition-all duration-500 p-5">
+  <div className="group bg-white rounded-2xl overflow-hidden">
     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
       <div className="flex items-center space-x-4">
         <div className="p-3 bg-gray-800 rounded-2xl">
@@ -44,7 +43,7 @@ const StudentCard = ({ student }) => (
           <div className="flex items-center gap-4 text-sm text-gray-500">
             <span className="flex items-center">
               <Hash className="w-4 h-4 mr-1" />
-              {student?.id || 'N/A'}
+              {student?.matricula || 'N/A'}
             </span>
             <span className="flex items-center">
               <Mail className="w-4 h-4 mr-1" />
@@ -55,7 +54,7 @@ const StudentCard = ({ student }) => (
       </div>
       <div className="flex items-center gap-4">
         <span className="inline-flex items-center px-4 py-2 rounded-full bg-gray-800 text-gray-50 group-hover:bg-gray-700 transition-colors">
-          <Trophy className="w-4 h-4 mr-2" />
+          <Coins className="w-4 h-4 mr-2" />
           {student?.turingBalance || 0} τ
         </span>
       </div>
@@ -64,50 +63,38 @@ const StudentCard = ({ student }) => (
 );
 
 const ActivityCard = ({ activity }) => (
-  <div className="group bg-white rounded-2xl overflow-hidden hover:shadow-md transition-all duration-500 p-5">
-    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-      <div className="flex items-center space-x-4">
-        <div className="p-3 bg-gray-800 rounded-2xl">
-          {activity.type === 'participation' && <Users className="w-6 h-6 text-gray-50" />}
-          {activity.type === 'homework' && <Book className="w-6 h-6 text-gray-50" />}
-          {activity.type === 'project' && <Terminal className="w-6 h-6 text-gray-50" />}
-          {activity.type === 'exam' && <GraduationCap className="w-6 h-6 text-gray-50" />}
-          {activity.type === 'other' && <Trophy className="w-6 h-6 text-gray-50" />}
-        </div>
-        <div>
-          <h3 className="font-medium text-gray-900">{activity.title}</h3>
-          <div className="flex items-center gap-4 text-sm text-gray-500">
+    <Link
+        to={`/actividades/${activity.id}`}
+        className="block group bg-white rounded-2xl overflow-hidden hover:shadow-md transition-all duration-500 p-5"
+    >
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div className="flex items-center space-x-4">
+          <div className="p-3 bg-gray-800 rounded-2xl">
+            <Terminal className="w-6 h-6 text-gray-50" />
+          </div>
+          <div>
+            <h3 className="font-medium text-gray-900">{activity.title}</h3>
+            <div className="flex items-center gap-4 text-sm text-gray-500">
             <span className="flex items-center">
-              <Trophy className="w-4 h-4 mr-1" />
-              {activity.turingPoints} τ
+              <Coins className="w-4 h-4 mr-1" />
+              {activity.turingBalance} τ
             </span>
-            {activity.dueDate && (
-              <span className="flex items-center">
-                <Clock className="w-4 h-4 mr-1" />
-                {new Date(activity.dueDate).toLocaleDateString()}
-              </span>
-            )}
+            </div>
           </div>
         </div>
-      </div>
-      <div className="flex items-center gap-4">
-        {activity.maxParticipants > 0 && (
-          <span className="inline-flex items-center px-4 py-2 rounded-full bg-gray-100 text-gray-800">
+        <div className="flex items-center gap-4">
+          {activity.maxParticipants > 0 && (
+              <span className="inline-flex items-center px-4 py-2 rounded-full bg-gray-100 text-gray-800">
             <Users className="w-4 h-4 mr-2" />
-            {activity.participants?.length || 0}/{activity.maxParticipants}
+                {activity.participants?.length || 0}/{activity.maxParticipants}
           </span>
-        )}
-        <span className={`inline-flex items-center px-4 py-2 rounded-full ${
-          activity.status === 'active' 
-            ? 'bg-green-100 text-green-800' 
-            : 'bg-gray-100 text-gray-800'
-        }`}>
-          {activity.status === 'active' ? 'Activa' : 'Finalizada'}
-        </span>
+          )}
+        </div>
       </div>
-    </div>
-  </div>
+    </Link>
 );
+
+
 
 const GroupDetailView = () => {
   const { groupId } = useParams();

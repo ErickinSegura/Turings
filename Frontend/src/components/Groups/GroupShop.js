@@ -42,13 +42,21 @@ const ProductCard = ({
                          onPurchase
                      }) => {
     const [showPurchaseModal, setShowPurchaseModal] = useState(false);
-    const [quantity, setQuantity] = useState(1);
+    const [purchaseError, setPurchaseError] = useState("");
     const { user } = useAuth();
 
     const handlePurchase = () => {
-        onPurchase(product.id, quantity);
+        if (product.price > user?.turingBalance) {
+            setPurchaseError("No tienes suficientes Turings para realizar esta compra");
+            return;
+        }
+        if (product.stock < 1) {
+            setPurchaseError("No hay stock disponible de este producto");
+            return;
+        }
+        onPurchase(product.id, 1);
         setShowPurchaseModal(false);
-        setQuantity(1);
+        setPurchaseError("");
     };
 
     if (isEditing) {
@@ -163,8 +171,8 @@ const ProductCard = ({
                                     {product.name}
                                 </h3>
                                 <span className="px-3 py-1 rounded-full text-sm font-medium bg-gray-50 text-gray-700">
-                  {product.price} Turings
-                </span>
+                                    {product.price} Turings
+                                </span>
                             </div>
                             <p className="text-gray-600 text-sm leading-relaxed mb-2">
                                 {product.description}
@@ -196,38 +204,36 @@ const ProductCard = ({
                                 <button
                                     className="mt-4 w-full bg-gray-900 hover:bg-gray-800 text-white font-medium py-2.5 px-4 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 group"
                                     onClick={() => setShowPurchaseModal(true)}
+                                    disabled={product.stock < 1}
                                 >
                                     <ShoppingBag className="w-5 h-5 transition-transform duration-300 group-hover:scale-110"/>
-                                    <span>Comprar</span>
+                                    <span>{product.stock < 1 ? 'Sin stock' : 'Comprar'}</span>
                                 </button>
 
                                 <Modal
                                     isOpen={showPurchaseModal}
-                                    onClose={() => setShowPurchaseModal(false)}
+                                    onClose={() => {
+                                        setShowPurchaseModal(false);
+                                        setPurchaseError("");
+                                    }}
                                     title={`Comprar ${product.name}`}
                                 >
                                     <div className="space-y-4">
                                         <p className="text-gray-600">Precio: <span className="font-semibold">{product.price} Turings</span></p>
                                         <p className="text-gray-600">Tu balance: <span className="font-semibold">{user?.turingBalance || 0} Turings</span></p>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                Cantidad:
-                                            </label>
-                                            <input
-                                                type="number"
-                                                min="1"
-                                                max={product.stock}
-                                                value={quantity}
-                                                onChange={(e) => setQuantity(parseInt(e.target.value) || 1)}
-                                                className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-200"
-                                            />
-                                        </div>
-                                        <p className="text-lg font-semibold">
-                                            Total: {product.price * quantity} Turings
-                                        </p>
+
+                                        {purchaseError && (
+                                            <div className="p-3 bg-red-50 text-red-600 rounded-xl">
+                                                {purchaseError}
+                                            </div>
+                                        )}
+
                                         <div className="flex justify-end gap-3 mt-6">
                                             <button
-                                                onClick={() => setShowPurchaseModal(false)}
+                                                onClick={() => {
+                                                    setShowPurchaseModal(false);
+                                                    setPurchaseError("");
+                                                }}
                                                 className="px-4 py-2 bg-gray-100 text-gray-800 rounded-xl hover:bg-gray-200 transition-colors"
                                             >
                                                 Cancelar
@@ -235,7 +241,6 @@ const ProductCard = ({
                                             <button
                                                 onClick={handlePurchase}
                                                 className="px-4 py-2 bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-colors"
-                                                disabled={quantity > product.stock || product.price * quantity > user?.turingBalance}
                                             >
                                                 Confirmar Compra
                                             </button>
@@ -250,6 +255,26 @@ const ProductCard = ({
         </div>
     );
 };
+
+const TransactionCard = ({ transaction }) => (
+    <div className="bg-white rounded-2xl overflow-hidden border border-black hover:shadow-lg transition-all duration-300 p-6">
+        <div className="flex justify-between items-center mb-4">
+            <div>
+                <h3 className="text-xl font-semibold text-gray-800">{transaction.productName}</h3>
+                <p className="text-sm text-gray-500">
+                    {new Date(transaction.timestamp?.toDate()).toLocaleDateString()}
+                </p>
+            </div>
+            <span className="px-3 py-1 rounded-full text-sm font-medium bg-gray-50 text-gray-700">
+                {transaction.totalPrice} T
+            </span>
+        </div>
+        <div className="flex justify-between text-gray-600">
+            <p>Estudiante: {transaction.studentName}</p>
+            <p>Cantidad: {transaction.quantity}</p>
+        </div>
+    </div>
+);
 
 const Shop = ({ isTeacher = false, groupId }) => {
     const {
@@ -271,6 +296,7 @@ const Shop = ({ isTeacher = false, groupId }) => {
     const [showTransactionsModal, setShowTransactionsModal] = useState(false);
     const [isAddingProduct, setIsAddingProduct] = useState(false);
     const [editingProduct, setEditingProduct] = useState(null);
+    const [purchaseStatus, setPurchaseStatus] = useState({ message: '', type: '' });
     const [newProduct, setNewProduct] = useState({
         name: '',
         price: '',
@@ -291,15 +317,29 @@ const Shop = ({ isTeacher = false, groupId }) => {
     };
 
     const handlePurchase = async (productId, quantity) => {
-        const result = await purchaseProduct(productId, user.uid, quantity);
-        if (result.success) {
-            window.location.reload();
-        } else {
-            alert(result.error);
+        try {
+            const result = await purchaseProduct(productId, user.uid, quantity);
+            if (result.success) {
+                setPurchaseStatus({
+                    message: '¡Compra realizada con éxito!',
+                    type: 'success'
+                });
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+            } else {
+                setPurchaseStatus({
+                    message: result.error || 'Error al realizar la compra',
+                    type: 'error'
+                });
+            }
+        } catch (error) {
+            setPurchaseStatus({
+                message: 'Error al procesar la compra',
+                type: 'error'
+            });
         }
     };
-
-
 
     const handleAddProduct = async () => {
         await addProduct(newProduct);
@@ -334,7 +374,7 @@ const Shop = ({ isTeacher = false, groupId }) => {
                             Tienda de Turings
                         </h1>
                         <p className="text-gray-500 text-lg">
-                            {isTeacher ? 'Gestiona el inventario de la tienda' : `Tu balance: ${user?.turingBalance || 0} Turings`}
+                            {isTeacher ? 'Gestiona el inventario de la tienda' : `Gasta sabiamente...`}
                         </p>
                     </div>
                     {isTeacher && (

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/authContext';
-import { Terminal, PlusCircle, ChevronRight, ArrowDownCircle, ArrowUpCircle, ShoppingBag } from 'lucide-react';
+import { Terminal, PlusCircle, ChevronRight, ArrowDownCircle, ArrowUpCircle } from 'lucide-react';
 import useShopTransactions from "../../hooks/UseShopTransactions";
 
 const ActionCard = ({ icon: Icon, title, description }) => (
@@ -120,12 +120,12 @@ const HomePage = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-            <StatsCard title="Actividades Completadas" value="24" />
+            <StatsCard title="Actividades Completadas" value={user?.completedActivities?.length || 0} />
             <StatsCard title="Turings Disponibles" value={user?.turingBalance || 0} />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-1 gap-8 mb-12">
-            <Link to="/register-activity" className="block">
+            <Link to="/scan" className="block">
               <ActionCard
                   icon={PlusCircle}
                   title="Registrar Nueva Actividad"

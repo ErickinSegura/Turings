@@ -2,8 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../context/authContext';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../../firebase';
-import { User, Mail, School, Calendar, Star, Target, ChartBar, TrendingUp, Book } from 'lucide-react';
-import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
+import { User, Mail, Star, Target, ChartBar} from 'lucide-react';
 
 // Stats Card Component
 const StatsCard = ({ icon: Icon, title, value, description }) => (

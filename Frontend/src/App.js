@@ -5,7 +5,6 @@ import NavBar from './components/Basics/NavBar';
 import TeacherProfilePage from './components/TeacherView/ProfessorProfilePage';
 import ProtectedRoute from './components/ProtectedRoutes';
 import PuntajesPage from './components/PuntajesPage';
-import QRPage from './components/Basics/QRPage';
 import RegisterPage from './components/RegisterPage';
 import StudentProfilePage from './components/StudentView/StudentProfilePage';
 import TiendaPage from './components/TiendaPage';
@@ -19,6 +18,10 @@ import EditGroupForm from "./components/Groups/EditGroupForm";
 import CreateActivity from './components/Groups/CreateActivity';
 import GroupShopPage from './components/Groups/GroupShopPage';
 import GroupsPage from "./components/TeacherView/GroupsPage";
+import ActivityDetailView from "./components/TeacherView/ActivityDetailView";
+import ScanActivity from "./components/StudentView/ScanActivity";
+import GroupLeaderboardPage from "./components/Groups/GroupLeaderboardPage";
+
 
 function App() {
   return (
@@ -110,9 +113,18 @@ function AppContent() {
               </ProtectedRoute>
             } />
 
+            <Route path="/grupos/:groupId/leaderboard" element={
+              <ProtectedRoute allowedRoles={['teacher', 'student']}>
+                <GroupLeaderboardPage />
+              </ProtectedRoute>
+            } />
+
           {/* Rutas públicas (no autenticación necesaria) */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+
+          <Route path={"/scan"} element={<ScanActivity />} />
+          <Route path="/actividades/:activityId" element={<ActivityDetailView />} />
         </Routes>
       </div>
   );
