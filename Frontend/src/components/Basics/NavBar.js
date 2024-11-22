@@ -13,8 +13,12 @@ const NavBar = () => {
   };
 
   const handleStoreNavigation = () => {
-    if (user?.role === 'student' && user?.groupId) {
-      navigate(`/grupos/${user.groupId}/tienda`);
+    if (user?.role === 'student') {
+      if (user?.groupId) {
+        navigate(`/grupos/${user.groupId}/tienda`);
+      } else {
+        navigate('/perfil-estudiante');
+      }
     } else {
       navigate('/tienda');
     }
@@ -28,19 +32,24 @@ const NavBar = () => {
     }
   };
 
-  // Función para determinar enlaces según el rol del usuario
+  const handleScoresNavigation = () => {
+    if (user?.role === 'student') {
+      if (user?.groupId) {
+        navigate(`/grupos/${user.groupId}/leaderboard`);
+      } else {
+        navigate('/perfil-estudiante');
+      }
+    } else {
+      navigate('/puntajes');
+    }
+  };
+
   const getNavLinks = () => {
     if (user?.role === 'student') {
       return [
         { label: 'Inicio', to: '/', onClick: () => navigate('/') },
         { label: 'Tienda', onClick: handleStoreNavigation },
-        { label: 'Puntajes', onClick: () => {
-            if (user.groupId) {
-              navigate(`/grupos/${user.groupId}/leaderboard`);
-            } else {
-              navigate('/puntajes');
-            }
-          }},
+        { label: 'Puntajes', onClick: handleScoresNavigation },
       ];
     }
     if (user?.role === 'teacher') {
@@ -86,11 +95,13 @@ const NavBar = () => {
 
             {/* Desktop User Info */}
             <div className="hidden md:flex items-center space-x-4">
-              {/* Turing Balance */}
-              <div className="flex items-center bg-gray-800 px-3 py-1 rounded-lg">
-                <Coins className="w-4 h-4 text-gray-50 mr-2" />
-                <span className="text-gray-50 font-semibold">{user?.turingBalance || 0} τ</span>
-              </div>
+              {/* Turing Balance - Only show for students */}
+              {user?.role === 'student' && (
+                  <div className="flex items-center bg-gray-800 px-3 py-1 rounded-lg">
+                    <Coins className="w-4 h-4 text-gray-50 mr-2" />
+                    <span className="text-gray-50 font-semibold">{user?.turingBalance || 0} τ</span>
+                  </div>
+              )}
 
               {/* User Icon */}
               <button

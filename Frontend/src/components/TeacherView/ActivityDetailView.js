@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import QRCode from 'react-qr-code';
 import { db } from '../../firebase';
-import { ArrowLeft, Calendar, Award, Activity, AlertCircle } from 'lucide-react';
+import { Award, Activity, AlertCircle } from 'lucide-react';
 import { useAuth } from '../../context/authContext';
 
 const StatsCard = ({ icon: Icon, title, value }) => (

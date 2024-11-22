@@ -113,7 +113,6 @@ const CreateActivity = () => {
                     />
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">Turings a Otorgar</label>
@@ -127,19 +126,6 @@ const CreateActivity = () => {
                           required
                       />
                     </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Máximo de Participantes</label>
-                      <input
-                          type="number"
-                          name="maxParticipants"
-                          value={formData.maxParticipants}
-                          onChange={handleInputChange}
-                          min="0"
-                          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-800 focus:border-gray-800"
-                      />
-                    </div>
-                  </div>
                   <div className="flex justify-end space-x-4 pt-6">
                     <button
                         type="button"

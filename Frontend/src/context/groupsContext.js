@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState } from "react";
-import { addDoc, arrayUnion, collection, doc, getDoc, serverTimestamp, updateDoc } from "firebase/firestore";
+import { addDoc, collection, doc, getDocs, query, serverTimestamp, updateDoc, where } from "firebase/firestore";
 import { db } from "../firebase";
 import * as XLSX from "xlsx";
 
@@ -11,31 +11,56 @@ export function GroupsProvider({ children }) {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const addStudentById = async (studentId) => {
-    try {
-      const studentRef = doc(db, "users", studentId);
-      const studentDoc = await getDoc(studentRef);
+  const addStudentById = async (studentMatricula) => {
+    // Validar que la matrícula no esté vacía y sea un string
+    if (!studentMatricula || typeof studentMatricula !== 'string') {
+      console.warn("Matrícula inválida");
+      return false;
+    }
 
-      if (studentDoc.exists() && studentDoc.data().role === "student") {
+    // Limpiar y normalizar la matrícula (quitar espacios, convertir a mayúsculas)
+    const cleanedMatricula = studentMatricula.trim().toUpperCase();
+
+    try {
+      // Configurar la consulta para buscar por matrícula
+      const usersRef = collection(db, "users");
+      const q = query(
+          usersRef,
+          where("matricula", "==", cleanedMatricula),
+          where("role", "==", "student")
+      );
+
+      const querySnapshot = await getDocs(q);
+
+      // Verificar si se encontró algún estudiante
+      if (!querySnapshot.empty) {
+        const studentDoc = querySnapshot.docs[0];
         const studentData = {
           id: studentDoc.id,
           ...studentDoc.data(),
         };
 
+        // Agregar estudiante a la lista seleccionada
         setSelectedStudents((prev) => {
+          // Prevenir duplicados basados en matrícula
           const updatedList = [...prev, studentData];
           return updatedList
-            .filter((s, index, self) => self.findIndex(t => t.matricula === s.matricula) === index)
-            .sort((a, b) => a.name.split(" ")[0].localeCompare(b.name.split(" ")[0]));
+              .filter((s, index, self) =>
+                  self.findIndex(t => t.matricula === s.matricula) === index
+              )
+              .sort((a, b) => a.name.split(" ")[0].localeCompare(b.name.split(" ")[0]));
         });
 
         return true;
       } else {
-        console.warn(`No se encontró un estudiante con ID ${studentId} o no tiene rol de estudiante.`);
+        // Si no se encuentra el estudiante, agregar a la lista de no encontrados
+        console.warn(`No se encontró un estudiante con matrícula ${cleanedMatricula}`);
+        setNotFoundStudents(prev => [...prev, cleanedMatricula]);
         return false;
       }
     } catch (error) {
       console.error("Error al buscar estudiante:", error);
+      setError(`Error al buscar estudiante: ${error.message}`);
       return false;
     }
   };
@@ -48,24 +73,25 @@ export function GroupsProvider({ children }) {
 
     setLoading(true);
     setError(null);
+    // Limpiar estudiantes no encontrados al procesar nuevo archivo
+    setNotFoundStudents([]);
 
     try {
       const data = await file.arrayBuffer();
       const workbook = XLSX.read(data);
       const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-      const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+      const rows = XLSX.utils.sheet_to_json(worksheet);
 
       const matriculas = rows
-        .slice(1)
-        .map(row => (Array.isArray(row) ? row[0] : null))
-        .filter(Boolean);
+          .map(row => row['SIS Login ID'])
+          .filter(Boolean);
 
       const notFound = [];
 
-      for (const studentId of matriculas) {
-        const studentAdded = await addStudentById(studentId);
+      for (const studentMatricula of matriculas) {
+        const studentAdded = await addStudentById(studentMatricula);
         if (!studentAdded) {
-          notFound.push(studentId);
+          notFound.push(studentMatricula);
         }
       }
 
@@ -78,6 +104,7 @@ export function GroupsProvider({ children }) {
     }
   };
 
+  // Resto del código permanece igual
   const createGroup = async (classCode, codeNumber) => {
     if (codeNumber === "" || selectedStudents.length === 0) return null;
 
@@ -91,16 +118,17 @@ export function GroupsProvider({ children }) {
         name: groupName,
         studentIds: selectedStudents.map((s) => s.id),
         createdAt: serverTimestamp(),
+        isActive: true,
       });
 
       for (const student of selectedStudents) {
         const studentRef = doc(db, "users", student.id);
         await updateDoc(studentRef, {
-          groupIds: arrayUnion(docRef.id),
+          groupId: docRef.id,
         });
       }
 
-      // Clear state after successful creation
+      // Limpiar estado después de crear el grupo
       setSelectedStudents([]);
       setNotFoundStudents([]);
       setError(null);

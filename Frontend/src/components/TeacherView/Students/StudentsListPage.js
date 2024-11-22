@@ -85,7 +85,7 @@ const StudentsListPage = () => {
         studentsQuery = query(
           collection(db, 'users'),
           where('role', '==', 'student'),
-          where('groupIds', 'array-contains', filters.group)
+          where('groupId', '==', filters.group)
         );
       }
 
@@ -220,7 +220,7 @@ const StudentsListPage = () => {
                 Matrícula: {student.matricula}
               </div>
             </div>
-            {student.groupNames && student.groupNames.length > 0 && (
+            {student.groupName && student.groupName.length > 0 && (
               <div className="mt-4">
                 <h4 className="text-sm font-semibold text-gray-700 mb-2">Grupos Inscritos:</h4>
                 <div className="flex flex-wrap gap-2">

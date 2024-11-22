@@ -31,7 +31,7 @@ function AuthProvider({ children }) {
         email: userData.email,
         name: userData.name || "Usuario sin nombre",
         role: userData.role || "student",
-        matricula: userData.matricula || "",
+        matricula: userData.matricula.toUpperCase() || "",
         groupId: userData.groupId || "",
         turingBalance: userData.turingBalance || 0,
         createdAt: serverTimestamp(),

@@ -19,13 +19,11 @@ const useShopTransactions = (groupId) => {
         setError(null);
 
         try {
-            // Get references
             const productRef = doc(db, 'products', productId);
             const studentRef = doc(db, 'users', studentId);
             const transactionsRef = collection(db, 'transactions');
 
             const result = await runTransaction(db, async (transaction) => {
-                // 1. Get product and student data in transaction
                 const productSnap = await transaction.get(productRef);
                 const studentSnap = await transaction.get(studentRef);
 
@@ -39,19 +37,17 @@ const useShopTransactions = (groupId) => {
                 const product = productSnap.data();
                 const student = studentSnap.data();
 
-                // 2. Verify stock
                 if (product.stock < quantity) {
                     throw new Error('Stock insuficiente');
                 }
 
-                // 3. Verify balance
                 const totalCost = product.price * quantity;
                 if (student.turingBalance < totalCost) {
                     throw new Error('Balance insuficiente');
                 }
 
-                // 4. Create transaction record
                 const transactionData = {
+                    type: 'purchase',
                     productId,
                     productName: product.name,
                     studentId,
@@ -59,22 +55,71 @@ const useShopTransactions = (groupId) => {
                     groupId,
                     quantity,
                     pricePerUnit: product.price,
-                    totalPrice: totalCost,
+                    totalPrice: -totalCost, // Negativo porque es un gasto
                     timestamp: serverTimestamp(),
                     status: 'completed'
                 };
 
-                // 5. Update product stock
                 transaction.update(productRef, {
                     stock: product.stock - quantity
                 });
 
-                // 6. Update student balance
                 transaction.update(studentRef, {
                     turingBalance: student.turingBalance - totalCost
                 });
 
-                // 7. Create transaction record
+                const newTransactionRef = doc(transactionsRef);
+                transaction.set(newTransactionRef, transactionData);
+
+                return { success: true };
+            });
+
+            return result;
+        } catch (err) {
+            setError(err.message);
+            return { success: false, error: err.message };
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const recordActivityCompletion = async (activityId, studentId, activityData, reward) => {
+        setLoading(true);
+        setError(null);
+
+        try {
+            const studentRef = doc(db, 'users', studentId);
+            const transactionsRef = collection(db, 'transactions');
+
+            const result = await runTransaction(db, async (transaction) => {
+                const studentSnap = await transaction.get(studentRef);
+
+                if (!studentSnap.exists()) {
+                    throw new Error('Estudiante no encontrado');
+                }
+
+                const student = studentSnap.data();
+
+                // Crear registro de transacción para la actividad
+                const transactionData = {
+                    type: 'activity',
+                    activityId,
+                    description: `Actividad: ${activityData.title || 'Completada'}`,
+                    studentId,
+                    studentName: student.name,
+                    groupId,
+                    totalPrice: reward, // Positivo porque es una ganancia
+                    timestamp: serverTimestamp(),
+                    status: 'completed'
+                };
+
+                // Actualizar balance del estudiante
+                transaction.update(studentRef, {
+                    turingBalance: (student.turingBalance || 0) + reward,
+                    completedActivities: [...(student.completedActivities || []), activityId]
+                });
+
+                // Crear registro de transacción
                 const newTransactionRef = doc(transactionsRef);
                 transaction.set(newTransactionRef, transactionData);
 
@@ -129,6 +174,7 @@ const useShopTransactions = (groupId) => {
 
     return {
         purchaseProduct,
+        recordActivityCompletion,
         getStudentTransactions,
         getGroupTransactions,
         loading,

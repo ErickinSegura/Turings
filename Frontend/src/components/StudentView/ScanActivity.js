@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import QrReader from 'react-qr-scanner';
-import { doc, getDoc, updateDoc, arrayUnion } from 'firebase/firestore';
+import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../../firebase';
 import { useAuth } from '../../context/authContext';
+import useShopTransactions from '../../hooks/UseShopTransactions';
 
 const ScanActivity = () => {
     const [scanResult, setScanResult] = useState(null);
@@ -10,9 +11,11 @@ const ScanActivity = () => {
     const [isScanning, setIsScanning] = useState(true);
     const [hasCamera, setHasCamera] = useState(false);
     const { user } = useAuth();
+    const { recordActivityCompletion } = useShopTransactions(user?.groupId);
+    const processingRef = useRef(false);
+    const lastScannedRef = useRef(null);
 
     useEffect(() => {
-        // Verificar disponibilidad de la cámara
         const checkCamera = async () => {
             try {
                 if (!navigator?.mediaDevices?.getUserMedia) {
@@ -33,41 +36,66 @@ const ScanActivity = () => {
     }, []);
 
     const handleScan = async (data) => {
-        if (data) {
-            try {
-                const { activityId } = JSON.parse(data.text);
+        // Si no hay datos o ya estamos procesando, ignorar
+        if (!data || processingRef.current) return;
 
-                const activityRef = doc(db, 'activities', activityId);
-                const activitySnap = await getDoc(activityRef);
+        try {
+            const scannedData = JSON.parse(data.text);
 
-                if (!activitySnap.exists()) {
-                    throw new Error('Actividad no encontrada.');
-                }
-
-                const activity = activitySnap.data();
-
-                if (activity.status !== 'active') {
-                    throw new Error('Esta actividad ya no acepta entregas.');
-                }
-
-                const userRef = doc(db, 'users', user.uid);
-                const userSnap = await getDoc(userRef);
-
-                if (userSnap.exists() && userSnap.data().completedActivities?.includes(activityId)) {
-                    throw new Error('Ya has completado esta actividad.');
-                }
-
-                await updateDoc(userRef, {
-                    completedActivities: arrayUnion(activityId),
-                    turingBalance: (userSnap.data().turingBalance || 0) + activity.turingBalance,
-                });
-
-                setScanResult(`¡Actividad registrada! Ganaste ${activity.turingBalance} τ.`);
-                setIsScanning(false);
-            } catch (err) {
-                setError(err.message);
-                setIsScanning(false);
+            // Verificar si es el mismo QR escaneado en los últimos 5 segundos
+            if (lastScannedRef.current === scannedData.activityId) {
+                return;
             }
+
+            // Marcar como procesando y guardar el ID
+            processingRef.current = true;
+            lastScannedRef.current = scannedData.activityId;
+            setIsScanning(false); // Detener el escaneo inmediatamente
+
+            const { activityId } = scannedData;
+
+            const activityRef = doc(db, 'activities', activityId);
+            const activitySnap = await getDoc(activityRef);
+
+            if (!activitySnap.exists()) {
+                throw new Error('Actividad no encontrada.');
+            }
+
+            const activity = activitySnap.data();
+
+            if (activity.status !== 'active') {
+                throw new Error('Esta actividad ya no acepta entregas.');
+            }
+
+            const userRef = doc(db, 'users', user.uid);
+            const userSnap = await getDoc(userRef);
+
+            if (userSnap.exists() && userSnap.data().completedActivities?.includes(activityId)) {
+                throw new Error('Ya has completado esta actividad.');
+            }
+
+            const result = await recordActivityCompletion(
+                activityId,
+                user.uid,
+                activity,
+                activity.turingBalance
+            );
+
+            if (!result.success) {
+                throw new Error(result.error || 'Error al registrar la actividad');
+            }
+
+            setScanResult(`¡Actividad registrada! Ganaste ${activity.turingBalance} τ.`);
+
+            // Limpiar el ID escaneado después de 5 segundos
+            setTimeout(() => {
+                lastScannedRef.current = null;
+            }, 5000);
+
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            processingRef.current = false;
         }
     };
 
@@ -75,12 +103,15 @@ const ScanActivity = () => {
         console.error('Error al escanear:', err);
         setError('Error al escanear el código QR. Por favor, verifica los permisos de la cámara e intenta nuevamente.');
         setIsScanning(false);
+        processingRef.current = false;
     };
 
     const resetScanner = () => {
         setError(null);
         setScanResult(null);
         setIsScanning(true);
+        processingRef.current = false;
+        lastScannedRef.current = null;
     };
 
     if (!hasCamera) {
@@ -102,7 +133,7 @@ const ScanActivity = () => {
                 {isScanning ? (
                     <div className="relative w-full h-64 bg-gray-100 rounded-lg overflow-hidden">
                         <QrReader
-                            delay={300}
+                            delay={500} // Aumentado el delay
                             style={{ width: '100%' }}
                             onError={handleError}
                             onScan={handleScan}
