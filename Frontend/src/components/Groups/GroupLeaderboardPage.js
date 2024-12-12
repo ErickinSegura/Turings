@@ -4,7 +4,6 @@ import { useParams } from 'react-router-dom';
 import { useGroupDetails } from '../../hooks/UseGroupDetails';
 
 const RankingCard = ({ position, username, turings }) => {
-    // Función para obtener el color de medalla según la posición
     const getMedalColor = (pos) => {
         switch (pos) {
             case 0: return 'bg-gradient-to-br from-yellow-300 to-yellow-500 border-yellow-400';
@@ -15,14 +14,14 @@ const RankingCard = ({ position, username, turings }) => {
     };
 
     return (
-        <div className="group bg-white rounded-2xl overflow-hidden hover:shadow-md transition-all duration-500 p-5 border border-gray-100">
-            <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                    <div className={`w-8 h-8 flex items-center justify-center rounded-full ${getMedalColor(position)} text-white font-bold border`}>
+        <div className="group bg-white rounded-2xl overflow-hidden hover:shadow-md transition-all duration-500 p-4 sm:p-5 border border-gray-100">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0">
+                <div className="flex items-center space-x-4 w-full sm:w-auto">
+                    <div className={`w-8 h-8 flex-shrink-0 flex items-center justify-center rounded-full ${getMedalColor(position)} text-white font-bold border`}>
                         {position + 1}
                     </div>
-                    <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 bg-gradient-to-br from-gray-50 to-gray-100 rounded-full flex items-center justify-center">
+                    <div className="flex items-center space-x-3 min-w-0">
+                        <div className="w-10 h-10 flex-shrink-0 bg-gradient-to-br from-gray-50 to-gray-100 rounded-full flex items-center justify-center">
                             <svg
                                 className="w-6 h-6 text-gray-700"
                                 fill="none"
@@ -37,13 +36,13 @@ const RankingCard = ({ position, username, turings }) => {
                                 />
                             </svg>
                         </div>
-                        <span className="font-medium text-gray-900">{username}</span>
+                        <span className="font-medium text-gray-900 truncate">{username}</span>
                     </div>
                 </div>
-                <div className="flex items-center space-x-3">
-          <span className="px-4 py-2 rounded-full bg-blue-50 text-blue-700 font-medium group-hover:bg-blue-100 transition-all duration-500">
-            {turings} Turings
-          </span>
+                <div className="flex items-center space-x-3 w-full sm:w-auto justify-between sm:justify-end">
+                    <span className="px-4 py-2 rounded-full bg-blue-50 text-blue-700 font-medium group-hover:bg-blue-100 transition-all duration-500 text-sm sm:text-base">
+                        {turings} Turings
+                    </span>
                     <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-gray-600 transform translate-x-0 group-hover:translate-x-1 transition-all duration-500" />
                 </div>
             </div>
@@ -52,15 +51,15 @@ const RankingCard = ({ position, username, turings }) => {
 };
 
 const StatsCard = ({ icon: Icon, title, value, description }) => (
-    <div className="bg-white rounded-3xl border border-black p-6 hover:shadow-lg transition-all duration-500">
-        <div className="flex items-center space-x-4 mb-4">
-            <div className="p-3 bg-gray-50 rounded-xl">
-                <Icon className="w-6 h-6 text-gray-700" />
+    <div className="bg-white rounded-3xl border border-black p-4 sm:p-6 hover:shadow-lg transition-all duration-500">
+        <div className="flex items-center space-x-3 sm:space-x-4 mb-3 sm:mb-4">
+            <div className="p-2 sm:p-3 bg-gray-50 rounded-xl">
+                <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700" />
             </div>
-            <h3 className="text-xl font-bold text-gray-900">{title}</h3>
+            <h3 className="text-lg sm:text-xl font-bold text-gray-900">{title}</h3>
         </div>
-        <p className="text-3xl font-semibold text-gray-900 mb-2">{value}</p>
-        <p className="text-gray-500 text-sm">{description}</p>
+        <p className="text-2xl sm:text-3xl font-semibold text-gray-900 mb-1 sm:mb-2">{value}</p>
+        <p className="text-gray-500 text-xs sm:text-sm">{description}</p>
     </div>
 );
 
@@ -71,10 +70,9 @@ const PuntajesPage = () => {
     const stats = React.useMemo(() => {
         if (!group?.students?.length) return null;
 
-        // Ordenar estudiantes por cantidad de Turings
         const sortedStudents = [...group.students]
             .sort((a, b) => (b.turingBalance || 0) - (a.turingBalance || 0))
-            .slice(0, 5); // Tomar solo los top 5
+            .slice(0, 5);
 
         const totalTurings = group.students.reduce(
             (acc, student) => acc + (student.turingBalance || 0),
@@ -89,45 +87,33 @@ const PuntajesPage = () => {
         };
     }, [group?.students]);
 
-    if (loading) {
+    if (loading || error || !stats) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
-                <div className="text-gray-600">Cargando datos...</div>
-            </div>
-        );
-    }
-
-    if (error) {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
-                <div className="text-red-600">Error: {error}</div>
-            </div>
-        );
-    }
-
-    if (!stats) {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
-                <div className="text-gray-500">No hay datos disponibles</div>
+            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 px-4">
+                <div className={`text-center ${error ? 'text-red-600' : 'text-gray-600'}`}>
+                    {loading ? 'Cargando datos...' :
+                        error ? `Error: ${error}` :
+                            'No hay datos disponibles'}
+                </div>
             </div>
         );
     }
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-            <div className="max-w-7xl mx-auto px-6 py-12">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
                 {/* Header Section */}
-                <div className="mb-12">
-                    <h1 className="text-4xl font-bold text-gray-900 mb-3">
+                <div className="mb-8 sm:mb-12">
+                    <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2 sm:mb-3">
                         Tabla de Clasificación
                     </h1>
-                    <p className="text-gray-500 text-lg">
+                    <p className="text-gray-500 text-base sm:text-lg">
                         Los mejores recolectores de Turings
                     </p>
                 </div>
 
                 {/* Stats Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-8 sm:mb-12">
                     <StatsCard
                         icon={(props) => (
                             <svg
@@ -190,11 +176,11 @@ const PuntajesPage = () => {
                 </div>
 
                 {/* Ranking Section */}
-                <div className="bg-white rounded-3xl border border-black shadow-sm p-8">
-                    <div className="flex items-center mb-8">
-                        <div className="p-3 bg-gray-50 rounded-2xl mr-4">
+                <div className="bg-white rounded-3xl border border-black shadow-sm p-4 sm:p-8">
+                    <div className="flex flex-col sm:flex-row sm:items-center mb-6 sm:mb-8 gap-4 sm:gap-0">
+                        <div className="p-2 sm:p-3 bg-gray-50 rounded-2xl sm:mr-4">
                             <svg
-                                className="w-6 h-6 text-gray-700"
+                                className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700"
                                 viewBox="0 0 24 24"
                                 fill="none"
                                 stroke="currentColor"
@@ -206,12 +192,12 @@ const PuntajesPage = () => {
                             </svg>
                         </div>
                         <div>
-                            <h2 className="text-xl font-bold text-gray-900">Top 5 Turing Holders</h2>
-                            <p className="text-gray-500 text-sm mt-1">Los estudiantes con más Turings acumulados</p>
+                            <h2 className="text-lg sm:text-xl font-bold text-gray-900">Top 5 Turing Holders</h2>
+                            <p className="text-gray-500 text-xs sm:text-sm mt-1">Los estudiantes con más Turings acumulados</p>
                         </div>
                     </div>
 
-                    <div className="space-y-4">
+                    <div className="space-y-3 sm:space-y-4">
                         {stats.topUsers.map((student, index) => (
                             <RankingCard
                                 key={student.id || index}
