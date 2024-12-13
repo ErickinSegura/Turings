@@ -185,14 +185,14 @@ const GroupDetailView = () => {
               <span className="hidden sm:inline">Nueva Actividad</span>
             </button>
             <button
-                onClick={() => navigate(`/grupos/${group.id}/tienda?role=${isTeacher ? 'teacher' : 'student'}`)}
+                onClick={() => navigate(`/grupos/${group.id}/tienda/admin`)}
                 className="flex-1 bg-white text-gray-800 border border-black px-4 sm:px-6 py-3 sm:py-4 rounded-3xl hover:shadow-lg transition-all duration-500 flex items-center justify-center gap-2"
             >
               <ShoppingBag className="w-5 h-5" />
               <span className="hidden sm:inline">Tienda del Grupo</span>
             </button>
 
-            {isTeacher && !group?.isActive && (
+            {group?.isActive && (
                 <button
                     onClick={handleDeactivateGroup}
                     className="flex-1 bg-red-600 text-white px-4 sm:px-6 py-3 sm:py-4 rounded-3xl hover:bg-red-700 hover:shadow-lg transition-all duration-500 flex items-center justify-center gap-2"
@@ -215,7 +215,7 @@ const GroupDetailView = () => {
               </div>
             </div>
 
-            <div className="space-y-4">
+            <div className="max-h-64 overflow-y-auto space-y-4">
               {group?.students?.length > 0 ? (
                   group.students.map((student) => (
                       <StudentCard key={student?.id || Math.random()} student={student} />
@@ -240,7 +240,7 @@ const GroupDetailView = () => {
               </div>
             </div>
 
-            <div className="space-y-4">
+            <div className="max-h-64 overflow-y-auto space-y-4">
               {group?.activities?.length > 0 ? (
                   group.activities.map((activity) => (
                       <ActivityCard key={activity.id} activity={activity} />

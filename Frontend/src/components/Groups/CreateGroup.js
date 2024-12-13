@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { Users, Upload, Search, PlusCircle, X, AlertCircle } from "lucide-react";
+import { Users, Upload, Search, PlusCircle, X, AlertCircle, CheckCircle } from "lucide-react";
 import { useGroups } from "../../context/groupsContext";
+import {useNavigate} from "react-router-dom";
 
 const Alert = ({ children, variant = "error" }) => {
   const variants = {
@@ -59,7 +60,7 @@ const StudentItem = ({ student, onRemove }) => (
     </div>
 );
 
-const CreateGroupPage = () => {
+const CreateGroupPage = ({  }) => {
   const {
     selectedStudents,
     notFoundStudents,
@@ -71,11 +72,15 @@ const CreateGroupPage = () => {
     removeStudent,
   } = useGroups();
 
+  const navigate = useNavigate();
   const [studentIdSearch, setStudentIdSearch] = useState("");
   const [classCode, setClassCode] = useState("TC3004");
   const [codeNumber, setCodeNumber] = useState("");
-  const [groupId, setGroupId] = useState(null);
-  const [activeSection, setActiveSection] = useState('configuration');
+  const [isGroupCreated, setIsGroupCreated] = useState(false);
+
+  const navigateToGroups = () => {
+    navigate('/grupos');
+  };
 
   const handleStudentSearch = () => {
     if (studentIdSearch.trim() === "") return;
@@ -92,121 +97,114 @@ const CreateGroupPage = () => {
     e.preventDefault();
     const newGroupId = await createGroup(classCode, codeNumber);
     if (newGroupId) {
-      setGroupId(newGroupId);
-      setClassCode("TC3004");
-      setCodeNumber("");
-      setActiveSection('confirmation');
+      setIsGroupCreated(true);
+      setTimeout(() => {
+        navigateToGroups();
+      }, 2000);
     }
   };
 
   return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
         <div className="max-w-7xl mx-auto px-6 py-12">
-          <div className="mb-12">
-            <h1 className="text-4xl font-bold text-gray-900 mb-3">
-              Crear Nuevo Grupo
-            </h1>
-            <p className="text-gray-500 text-lg">
-              Configura un nuevo grupo y agrega estudiantes
-            </p>
-          </div>
+          {isGroupCreated ? (
+              <div className="flex flex-col items-center justify-center min-h-screen">
+                <CheckCircle className="w-16 h-16 text-green-500 mb-6" />
+                <h1 className="text-3xl font-bold text-gray-900 mb-2">¡Grupo creado con éxito!</h1>
+                <p className="text-gray-500 text-lg">Serás redirigido a la página de grupos en breve.</p>
+              </div>
+          ) : (
+              <div>
+                <div className="mb-12">
+                  <h1 className="text-4xl font-bold text-gray-900 mb-3">Crear Nuevo Grupo</h1>
+                  <p className="text-gray-500 text-lg">Configura un nuevo grupo y agrega estudiantes</p>
+                </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Left Column - Configuration & Student Addition */}
-            <div className="space-y-8">
-              {activeSection === 'configuration' && (
-                  <div className="bg-white rounded-3xl border border-black shadow-sm p-8">
-                    <div className="flex items-center mb-6">
-                      <div className="p-3 bg-gray-800 rounded-2xl mr-4">
-                        <Users className="w-6 h-6 text-gray-50" />
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                  {/* Left Column - Configuration & Student Addition */}
+                  <div className="space-y-8">
+                    <div className="bg-white rounded-3xl border border-black shadow-sm p-8">
+                      <div className="flex items-center mb-6">
+                        <div className="p-3 bg-gray-800 rounded-2xl mr-4">
+                          <Users className="w-6 h-6 text-gray-50" />
+                        </div>
+                        <h2 className="text-xl font-bold text-gray-900">Configuración del Grupo</h2>
                       </div>
-                      <h2 className="text-xl font-bold text-gray-900">Configuración del Grupo</h2>
+
+                      <div className="space-y-6">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">Código de Clase</label>
+                          <select
+                              value={classCode}
+                              onChange={(e) => setClassCode(e.target.value)}
+                              className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                          >
+                            <option value="TC3004">TC3004</option>
+                            <option value="TC3005">TC3005</option>
+                            <option value="TC3006">TC3006</option>
+                          </select>
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">Código de 3 dígitos</label>
+                          <input
+                              type="text"
+                              value={codeNumber}
+                              onChange={(e) => setCodeNumber(e.target.value)}
+                              className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                              placeholder="Ej. 001"
+                              required
+                          />
+                        </div>
+                      </div>
                     </div>
 
-                    <div className="space-y-6">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Código de Clase
-                        </label>
-                        <select
-                            value={classCode}
-                            onChange={(e) => setClassCode(e.target.value)}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                        >
-                          <option value="TC3004">TC3004</option>
-                          <option value="TC3005">TC3005</option>
-                          <option value="TC3006">TC3006</option>
-                        </select>
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Código de 3 dígitos
-                        </label>
+                    <div className="space-y-4">
+                      <div className="relative">
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                          <Search className="h-5 w-5 text-gray-400" />
+                        </div>
                         <input
                             type="text"
-                            value={codeNumber}
-                            onChange={(e) => setCodeNumber(e.target.value)}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                            placeholder="Ej. 001"
-                            required
+                            value={studentIdSearch}
+                            onChange={(e) => setStudentIdSearch(e.target.value)}
+                            onKeyPress={(e) => e.key === 'Enter' && handleStudentSearch()}
+                            className="w-full pl-10 pr-4 py-2 border border-black rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                            placeholder="Ingresa la matrícula del estudiante"
+                        />
+                        {studentIdSearch.trim() && (
+                            <button
+                                onClick={handleStudentSearch}
+                                className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                            >
+                              <PlusCircle className="h-5 w-5 text-blue-500 hover:text-blue-600" />
+                            </button>
+                        )}
+                      </div>
+
+                      <div className="grid grid-cols-1 gap-4">
+                        <ActionCard
+                            icon={Upload}
+                            title="Cargar Archivo"
+                            description="Importar lista de estudiantes desde Excel o CSV"
+                            onClick={() => {
+                              document.getElementById('file-upload').click();
+                            }}
+                            disabled={loading}
+                        />
+                        <input
+                            id="file-upload"
+                            type="file"
+                            accept=".xlsx, .xls, .csv"
+                            onChange={handleFileUpload}
+                            className="hidden"
                         />
                       </div>
                     </div>
                   </div>
-              )}
 
-              {activeSection !== 'confirmation' && (
-                  <div className="space-y-4">
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <Search className="h-5 w-5 text-gray-400" />
-                      </div>
-                      <input
-                          type="text"
-                          value={studentIdSearch}
-                          onChange={(e) => setStudentIdSearch(e.target.value)}
-                          onKeyPress={(e) => e.key === 'Enter' && handleStudentSearch()}
-                          className="w-full pl-10 pr-4 py-2 border border-black rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                          placeholder="Ingresa la matrícula del estudiante"
-                      />
-                      {studentIdSearch.trim() && (
-                          <button
-                              onClick={handleStudentSearch}
-                              className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                          >
-                            <PlusCircle className="h-5 w-5 text-blue-500 hover:text-blue-600" />
-                          </button>
-                      )}
-                    </div>
-
-                    <div className="grid grid-cols-1 gap-4">
-                      <ActionCard
-                          icon={Upload}
-                          title="Cargar Archivo"
-                          description="Importar lista de estudiantes desde Excel o CSV"
-                          onClick={() => {
-                            document.getElementById('file-upload').click();
-                            //setActiveSection('students');
-                          }}
-                          disabled={loading}
-                      />
-                      <input
-                          id="file-upload"
-                          type="file"
-                          accept=".xlsx, .xls, .csv"
-                          onChange={handleFileUpload}
-                          className="hidden"
-                      />
-                    </div>
-                  </div>
-              )}
-            </div>
-
-            {/* Right Column - Selected Students or Confirmation */}
-            <div className="bg-white rounded-3xl border border-black shadow-sm p-8">
-              {activeSection !== 'confirmation' && (
-                  <>
+                  {/* Right Column - Selected Students */}
+                  <div className="bg-white rounded-3xl border border-black shadow-sm p-8">
                     <div className="flex items-center justify-between mb-6">
                       <div className="flex items-center">
                         <div className="p-3 bg-gray-800 rounded-2xl mr-4">
@@ -221,7 +219,7 @@ const CreateGroupPage = () => {
                       </div>
                     </div>
 
-                    <div className="space-y-4 mb-6">
+                    <div className="space-y-4 mb-6 overflow-y-auto max-h-96">
                       {selectedStudents.map((student) => (
                           <StudentItem
                               key={student.id}
@@ -247,37 +245,16 @@ const CreateGroupPage = () => {
                         onClick={handleSubmit}
                         disabled={!codeNumber || selectedStudents.length === 0}
                     />
-                  </>
-              )}
 
-              {activeSection === 'confirmation' && groupId && (
-                  <div className="text-center">
-                    <Alert variant="success">
-                      Grupo creado exitosamente con ID: {groupId}
-                      <div className="mt-4">
-                        <button
-                            onClick={() => {
-                              setActiveSection('configuration');
-                              setGroupId(null);
-                              setCodeNumber('');
-                              setClassCode('TC3004');
-                            }}
-                            className="bg-blue-600 text-white px-4 py-2 rounded-xl"
-                        >
-                          Crear Otro Grupo
-                        </button>
-                      </div>
-                    </Alert>
+                    {error && (
+                        <Alert variant="error" className="mt-6">
+                          {error}
+                        </Alert>
+                    )}
                   </div>
-              )}
-
-              {error && (
-                  <Alert variant="error" className="mt-6">
-                    {error}
-                  </Alert>
-              )}
-            </div>
-          </div>
+                </div>
+              </div>
+          )}
         </div>
       </div>
   );

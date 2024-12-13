@@ -64,11 +64,13 @@ const CourseCard = ({ course }) => {
                 {activeGroups.length > 0 && (
                     <div className="mb-6">
                         {activeGroups.map((group) => (
+                            <div className="mb-4" key={group.id}>
                             <GroupCard
                                 key={group.id}
                                 group={group}
                                 onClick={() => navigate(`/grupos/${group.id}`)}
                             />
+                            </div>
                         ))}
                     </div>
                 )}
@@ -122,7 +124,6 @@ const GroupsPage = () => {
                     ...doc.data(),
                 }));
 
-                // Organizar grupos por materia
                 const groupedByCourse = fetchedGroups.reduce((acc, group) => {
                     const courseName = group.name.split('-')[0];
                     if (!acc[courseName]) {
@@ -132,15 +133,11 @@ const GroupsPage = () => {
                     return acc;
                 }, {});
 
-                // Ordenar grupos dentro de cada curso: activos primero, luego por fecha
                 Object.values(groupedByCourse).forEach(course => {
                     course.groups.sort((a, b) => {
-                        // Primero ordenar por estado (activo/inactivo)
                         if (a.isActive === b.isActive) {
-                            // Si tienen el mismo estado, ordenar por fecha de creación (más reciente primero)
                             return b.createdAt?.seconds - a.createdAt?.seconds;
                         }
-                        // Grupos activos van primero
                         return a.isActive === false ? 1 : -1;
                     });
                 });

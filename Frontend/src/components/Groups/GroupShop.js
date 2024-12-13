@@ -14,10 +14,10 @@ const Modal = ({ isOpen, onClose, title, children }) => {
                     <div className="flex justify-between items-center">
                         <h3 className="text-xl font-semibold">{title}</h3>
                         <button
-                            onClick={onClose}
-                            className="text-gray-400 hover:text-gray-600"
+                            onClick={ onClose }
+                            className="px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-all"
                         >
-                            ×
+                            Cerrar
                         </button>
                     </div>
                 </div>
@@ -233,15 +233,6 @@ const ProductCard = ({
 
                                         <div className="flex justify-end gap-3 mt-6">
                                             <button
-                                                onClick={() => {
-                                                    setShowPurchaseModal(false);
-                                                    setPurchaseError("");
-                                                }}
-                                                className="px-4 py-2 bg-gray-100 text-gray-800 rounded-xl hover:bg-gray-200 transition-colors"
-                                            >
-                                                Cancelar
-                                            </button>
-                                            <button
                                                 onClick={handlePurchase}
                                                 className="px-4 py-2 bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-colors"
                                             >
@@ -316,7 +307,7 @@ const Shop = ({ groupId }) => {    const {
 
     const loadTransactions = async () => {
         const transactionsData = await getGroupTransactions();
-        setTransactions(transactionsData);
+        setTransactions(transactionsData.filter(transaction => transaction.totalPrice < 0));
     };
 
     const handlePurchase = async (productId, quantity) => {
@@ -467,40 +458,36 @@ const Shop = ({ groupId }) => {    const {
                     onClose={() => setShowTransactionsModal(false)}
                     title="Historial de Transacciones"
                 >
-                    <div className="space-y-4">
-                        <div className="hidden sm:block">
-                            <div className="max-h-[60vh] overflow-y-auto">
-                                <table className="w-full">
-                                    <thead className="bg-gray-50 sticky top-0">
-                                    <tr>
-                                        <th className="text-left p-3 text-sm font-medium text-gray-500">Fecha</th>
-                                        <th className="text-left p-3 text-sm font-medium text-gray-500">Estudiante</th>
-                                        <th className="text-left p-3 text-sm font-medium text-gray-500">Producto</th>
-                                        <th className="text-right p-3 text-sm font-medium text-gray-500">Total</th>
+                    <div className="bg-white rounded-2xl border border-gray-200 shadow-lg p-6">
+                        <div className="overflow-y-auto max-h-96">
+                            <table className="w-full table-auto border-collapse">
+                                <thead className="bg-gray-100 sticky top-0">
+                                <tr>
+                                    <th className="p-4 text-sm font-medium text-gray-600 text-left">Fecha</th>
+                                    <th className="p-4 text-sm font-medium text-gray-600 text-left">Estudiante</th>
+                                    <th className="p-4 text-sm font-medium text-gray-600 text-left">Producto</th>
+                                    <th className="p-4 text-sm font-medium text-gray-600 text-right">Total</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {transactions.map(transaction => (
+                                    <tr key={transaction.id}>
+                                        <td className="p-4 text-sm text-gray-700">{new Date(transaction.timestamp?.toDate()).toLocaleDateString()}</td>
+                                        <td className="p-4 text-sm text-gray-700">{transaction.studentName}</td>
+                                        <td className="p-4 text-sm text-gray-700">{transaction.productName}</td>
+                                        <td className="p-4 text-sm text-gray-700 text-right">
+                                            <span className="text-red-600 font-semibold">{transaction.totalPrice} T</span>
+                                        </td>
                                     </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-gray-200">
-                                    {transactions.map(transaction => (
-                                        <tr key={transaction.id} className="hover:bg-gray-50">
-                                            <td className="p-3 text-sm text-gray-600">
-                                                {new Date(transaction.timestamp?.toDate()).toLocaleDateString()}
-                                            </td>
-                                            <td className="p-3 text-sm text-gray-600">{transaction.studentName}</td>
-                                            <td className="p-3 text-sm text-gray-600">{transaction.productName}</td>
-                                            <td className="p-3 text-sm text-gray-600 text-right">{transaction.totalPrice} T</td>
-                                        </tr>
-                                    ))}
-                                    </tbody>
-                                </table>
+                                ))}
+                                </tbody>
+                            </table>
+                        </div>
+                        {transactions.length === 0 && (
+                            <div className="text-center text-gray-500 mt-6">
+                                No hay transacciones para mostrar.
                             </div>
-                        </div>
-
-                        {/* Mobile view for transactions */}
-                        <div className="sm:hidden space-y-4">
-                            {transactions.map(transaction => (
-                                <TransactionCard key={transaction.id} transaction={transaction} />
-                            ))}
-                        </div>
+                        )}
                     </div>
                 </Modal>
             </div>
