@@ -51,10 +51,10 @@ const RankingCard = ({ position, username, turings }) => {
 };
 
 const StatsCard = ({ icon: Icon, title, value, description }) => (
-    <div className="bg-white rounded-3xl border border-black p-4 sm:p-6 hover:shadow-lg transition-all duration-500">
+    <div className="bg-white rounded-3xl border border-black p-4 sm:p-6">
         <div className="flex items-center space-x-3 sm:space-x-4 mb-3 sm:mb-4">
-            <div className="p-2 sm:p-3 bg-gray-50 rounded-xl">
-                <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700" />
+            <div className="p-2 sm:p-3 bg-gray-800 rounded-xl">
+                <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-gray-100" />
             </div>
             <h3 className="text-lg sm:text-xl font-bold text-gray-900">{title}</h3>
         </div>
@@ -178,9 +178,9 @@ const PuntajesPage = () => {
                 {/* Ranking Section */}
                 <div className="bg-white rounded-3xl border border-black shadow-sm p-4 sm:p-8">
                     <div className="flex flex-col sm:flex-row sm:items-center mb-6 sm:mb-8 gap-4 sm:gap-0">
-                        <div className="p-2 sm:p-3 bg-gray-50 rounded-2xl sm:mr-4">
+                        <div className="p-2 sm:p-3 bg-gray-800 rounded-2xl sm:mr-4">
                             <svg
-                                className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700"
+                                className="w-5 h-5 sm:w-6 sm:h-6 text-gray-100"
                                 viewBox="0 0 24 24"
                                 fill="none"
                                 stroke="currentColor"
