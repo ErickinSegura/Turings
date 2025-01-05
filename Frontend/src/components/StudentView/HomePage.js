@@ -7,8 +7,8 @@ import useShopTransactions from "../../hooks/UseShopTransactions";
 const ActionCard = ({ icon: Icon, title, description }) => (
     <div className="group bg-white rounded-3xl overflow-hidden border border-black hover:border-black shadow-sm hover:shadow-xl transition-all duration-500 p-8">
       <div className="flex items-start">
-        <div className="flex-shrink-0 p-3 bg-gray-800 rounded-2xl group-hover:bg-gray-100 transition-all duration-500">
-          <Icon className="w-8 h-8 text-gray-50 group-hover:text-gray-900 transition-all duration-500" />
+        <div className="flex-shrink-0 p-3 bg-gray-700 rounded-2xl group-hover:bg-gray-100 transition-all duration-500">
+          <Icon className="w-8 h-8 text-gray-50 group-hover:text-gray-700 transition-all duration-500" />
         </div>
         <div className="ml-6 flex-1">
           <h2 className="text-xl font-semibold text-gray-800 mb-2 group-hover:text-gray-900">
@@ -137,7 +137,7 @@ const HomePage = () => {
           <div className="bg-white rounded-3xl border border-black shadow-sm p-8">
             <div className="flex items-center justify-between mb-8">
               <div className="flex items-center">
-                <div className="p-3 bg-gray-800 rounded-2xl mr-4">
+                <div className="p-3 bg-gray-700 rounded-2xl mr-4">
                   <Terminal className="w-6 h-6 text-gray-50" />
                 </div>
                 <div>

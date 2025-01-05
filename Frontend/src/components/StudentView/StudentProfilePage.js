@@ -2,12 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../context/authContext';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../../firebase';
-import { User, Mail, Star, Target, ChartBar, TrendingUp, TrendingDown } from 'lucide-react';
+import { User, Mail, Star, Target, TrendingDown } from 'lucide-react';
 import {
   LineChart,
   Line,
-  BarChart,
-  Bar,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -18,14 +16,14 @@ import {
   Cell,
   ReferenceLine
 } from 'recharts';
-import useShopTransactions from '../../hooks/UseShopTransactions'; // Ajusta la ruta según tu estructura
+import useShopTransactions from '../../hooks/UseShopTransactions';
 
 // Stats Card Component
 const StatsCard = ({ icon: Icon, title, value, description }) => (
     <div className="bg-white rounded-3xl border border-black p-6 hover:shadow-lg transition-all duration-500">
       <div className="flex items-center space-x-4 mb-4">
-        <div className="p-3 bg-gray-50 rounded-xl">
-          <Icon className="w-6 h-6 text-gray-700" />
+        <div className="p-3 bg-gray-700 rounded-xl">
+          <Icon className="w-6 h-6 text-gray-50" />
         </div>
         <h3 className="text-xl font-bold text-gray-900">{title}</h3>
       </div>
@@ -53,7 +51,6 @@ const ProfilePage = () => {
   const handleLogOut = async () => {
     try {
       await logOut();
-      // El redireccionamiento debería ser manejado por tu router o context
     } catch (error) {
       console.error('Error al cerrar sesión:', error);
     }
@@ -101,7 +98,6 @@ const ProfilePage = () => {
       if (studentInfo.groupId) {
         fetchTransactions();
       } else {
-        // Si no hay groupId, aseguramos que loading sea false
         setLoading(false);
       }
     }
@@ -121,7 +117,6 @@ const ProfilePage = () => {
       return dateA - dateB;
     });
 
-    // Crear punto inicial
     const balanceData = [{
       date: sortedTransactions[0]?.timestamp?.toDate() || new Date(),
       balance: 0,
@@ -129,7 +124,6 @@ const ProfilePage = () => {
       amount: 0
     }];
 
-    // Procesar cada transacción
     sortedTransactions.forEach(transaction => {
       runningBalance += transaction.totalPrice;
 
@@ -177,15 +171,15 @@ const ProfilePage = () => {
 
               <button
                   onClick={handleLogOut}
-                  className="inline-flex items-center px-6 py-3 bg-white text-gray-700 rounded-2xl border border-gray-200 hover:bg-gray-50 hover:border-gray-300 transition-all duration-300"
+                  className="inline-flex items-center px-6 py-3 bg-black text-gray-50 rounded-2xl"
               >
                 Cerrar Sesión
               </button>
             </div>
             <div className="bg-white rounded-3xl border border-black p-8">
               <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
-                <div className="p-4 bg-gray-50 rounded-2xl">
-                  <User className="w-16 h-16 text-gray-700"/>
+                <div className="p-4 bg-black rounded-2xl">
+                  <User className="w-16 h-16 text-gray-50"/>
                 </div>
                 <div className="flex-1">
                   <h2 className="text-2xl font-bold text-gray-900 mb-4">
@@ -219,7 +213,6 @@ const ProfilePage = () => {
   return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
         <div className="max-w-7xl mx-auto px-6 py-12">
-          {/* Header y Profile Card permanecen igual */}
           <div className="flex justify-between items-start mb-12">
             <div>
               <h1 className="text-4xl font-bold text-gray-900 mb-3">Mi Perfil</h1>
