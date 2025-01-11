@@ -156,7 +156,7 @@ const ProfilePage = () => {
   };
 
   if (loading) {
-    return <div className="text-center py-20 text-gray-500">Cargando perfil...</div>;
+    return <div className="text-lg text-gray-600 flex justify-center items-center min-h-screen">Cargando perfil...</div>;
   }
 
   if (!studentInfo?.groupId) {
@@ -221,7 +221,7 @@ const ProfilePage = () => {
 
             <button
                 onClick={handleLogOut}
-                className="inline-flex items-center px-6 py-3 bg-white text-gray-700 rounded-2xl border border-gray-200 hover:bg-gray-50 hover:border-gray-300 transition-all duration-300"
+                className="inline-flex items-center px-6 py-3 bg-gray-800 text-gray-50 border border-gray-800 rounded-2xl hover:bg-gray-50 hover:text-gray-800 hover:border hover:border-black transition-all duration-300"
             >
               Cerrar Sesión
             </button>
@@ -229,8 +229,8 @@ const ProfilePage = () => {
 
           <div className="bg-white rounded-3xl border border-black shadow-sm p-8 mb-12">
             <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
-              <div className="p-4 bg-gray-50 rounded-2xl">
-                <User className="w-16 h-16 text-gray-700" />
+              <div className="p-4 bg-gray-800 rounded-2xl">
+                <User className="w-16 h-16 text-gray-50" />
               </div>
               <div className="flex-1">
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">{studentInfo?.name || 'Estudiante'}</h2>
@@ -269,7 +269,6 @@ const ProfilePage = () => {
 
           {/* Charts Section */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-            {/* Monthly Balance Chart */}
             <ChartCard title="Balance de Turings">
               <div className="h-80">
                 <ResponsiveContainer width="100%" height="100%">

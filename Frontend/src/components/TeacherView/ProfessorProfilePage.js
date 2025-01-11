@@ -8,11 +8,10 @@ import {
   Users,
   Video
 } from 'lucide-react';
-import React, { useState } from 'react';
 import { useAuth } from '../../context/authContext';
 
 const TeacherProfilePage = () => {
-  const { user, logOut } = useAuth();
+  const { logOut } = useAuth();
 
   const academicInfo = {
     title: "Dr. Jesús Guillermo Falcón Cardona",
@@ -59,7 +58,7 @@ const TeacherProfilePage = () => {
             </div>
             <button
                 onClick={logOut}
-                className="inline-flex items-center px-6 py-3 bg-white text-gray-700 rounded-2xl border border-gray-200 hover:bg-gray-50 hover:border-gray-300 transition-all duration-300"
+                className="inline-flex items-center px-6 py-3 bg-gray-800 text-gray-50 border border-gray-800 rounded-2xl hover:bg-gray-50 hover:text-gray-800 hover:border hover:border-black transition-all duration-300"
             >
               Cerrar Sesión
             </button>

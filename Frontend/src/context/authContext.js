@@ -22,7 +22,6 @@ function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Función para crear el documento de usuario en Firestore
   const createUserDocument = async (uid, userData) => {
     try {
       const userRef = doc(db, "users", uid);
@@ -38,26 +37,24 @@ function AuthProvider({ children }) {
       });
     } catch (error) {
       console.error("Error creating user document:", error);
-      throw new Error("No se pudo crear el documento de usuario en Firestore.");
+      throw error; // Propagamos el error original
     }
   };
 
-  // Función de registro de usuario
   const signUp = async (email, password, additionalData = {}) => {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const uid = userCredential.user.uid;
 
-      // Crea el documento en Firestore usando el UID como ID
       await createUserDocument(uid, {
         email,
         ...additionalData,
       });
 
-      return userCredential;
+      return { success: true, user: userCredential.user };
     } catch (error) {
       console.error("Error signing up:", error);
-      return { error: "No se pudo registrar al usuario. Revisa los datos e inténtalo de nuevo." };
+      return { success: false, error };
     }
   };
 
@@ -82,10 +79,10 @@ function AuthProvider({ children }) {
         setUser(null);
       }
 
-      return userCredential;
+      return { success: true, user: userCredential.user };
     } catch (error) {
       console.error("Error logging in:", error);
-      return { error: "No se pudo iniciar sesión. Revisa las credenciales e inténtalo de nuevo." };
+      return { success: false, error };
     }
   };
 

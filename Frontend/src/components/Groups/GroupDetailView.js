@@ -119,7 +119,7 @@ const GroupDetailView = () => {
   if (loading) {
     return (
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
-          <div className="text-gray-600">Cargando datos del grupo...</div>
+          <div className="text-lg text-gray-600">Cargando datos del grupo...</div>
         </div>
     );
   }

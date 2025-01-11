@@ -4,7 +4,7 @@ import { useGroupDetails } from '../../hooks/UseGroupDetails';
 import { Trophy, Star, Users } from 'lucide-react';
 
 const StatsCard = ({ icon: Icon, title, value, description }) => (
-    <div className="bg-white rounded-3xl border border-black p-6 hover:shadow-lg transition-all duration-500">
+    <div className="bg-white rounded-3xl border border-black p-6">
         <div className="flex items-center space-x-4 mb-4">
             <div className="p-3 bg-gray-700 rounded-xl">
                 <Icon className="w-6 h-6 text-gray-50" />
@@ -74,8 +74,9 @@ const PuntajesPage = () => {
 
     if (loading || error || !stats) {
         return (
+
             <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
-                <div className={`text-xl font-semibold ${error ? 'text-red-600' : 'text-gray-600'}`}>
+                <div className={`text-lg ${error ? 'text-red-600' : ' text-gray-600'}`}>
                     {loading ? 'Cargando datos...' :
                         error ? `Error: ${error}` :
                             'No hay datos disponibles'}
@@ -88,19 +89,19 @@ const PuntajesPage = () => {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-            <div className="max-w-7xl mx-auto px-3 py-8">
-                {/* Header */}
-                <div className="text-center mb-8">
-                    <h1 className="text-4xl font-bold text-gray-900 mb-2">
+            <div className="max-w-7xl mx-auto px-6 py-12">
+                <div>
+                    <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2 sm:mb-3">
                         Tabla de mejores posiciones
                     </h1>
-                    <p className="text-gray-500 text-lg">
+                    <p className="text-gray-500 text-base sm:text-lg">
                         Los maestros de los Turings
                     </p>
                 </div>
 
+
                 {/* Stats Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 pt-8">
                     <StatsCard
                         icon={Trophy}
                         title="Total Turings"
@@ -121,8 +122,7 @@ const PuntajesPage = () => {
                     />
                 </div>
 
-                {/* Podium Section - Added significant top padding */}
-                <div className="bg-white rounded-3xl border border-black p-8 pt-24 mb-8"> {/* Increased top padding */}
+                <div className="bg-white rounded-3xl border border-black p-8 pt-24 mb-8">
                     {/* Podium */}
                     <div className="flex justify-center items-end gap-4 h-72 mb-8">
                         {podiumOrder.map((position) => (
@@ -144,7 +144,8 @@ const PuntajesPage = () => {
                                 >
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-4">
-                                            <div className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-700 text-gray-50 font-semibold">
+                                            <div
+                                                className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-700 text-gray-50 font-semibold">
                                                 {index + 4}
                                             </div>
                                             <span className="font-medium text-gray-900">{player.name}</span>
