@@ -155,7 +155,7 @@ const GroupsPage = () => {
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center">
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
                 <div className="text-xl text-gray-600">Cargando...</div>
             </div>
         );

@@ -21,15 +21,18 @@
   import ActivityDetailView from "./components/TeacherView/ActivityDetailView";
   import ScanActivity from "./components/StudentView/ScanActivity";
   import GroupLeaderboardPage from "./components/Groups/GroupLeaderboardPage";
+  import {ThemeProvider} from "./context/themeContext";
 
 
   function App() {
     return (
-        <AuthProvider>
-          <Router>
-            <AppContent />
-          </Router>
-        </AuthProvider>
+        <ThemeProvider>
+          <AuthProvider>
+            <Router>
+              <AppContent />
+            </Router>
+          </AuthProvider>
+        </ThemeProvider>
     );
   }
 

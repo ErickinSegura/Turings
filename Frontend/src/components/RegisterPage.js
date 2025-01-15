@@ -25,6 +25,7 @@ const RegisterPage = () => {
       newErrors.name = 'El nombre solo puede contener letras y espacios';
     }
 
+
     // Validación del email
     if (!user.email) {
       newErrors.email = 'El correo electrónico es requerido';
@@ -32,17 +33,27 @@ const RegisterPage = () => {
       newErrors.email = 'El formato del correo electrónico no es válido';
     } else if (!user.email.endsWith('@tec.mx')) {
       newErrors.email = 'Debe ser un correo institucional (@tec.mx)';
+    } else if (!/^A0[a-zA-Z0-9]+@tec\.mx$/i.test(user.email)) {
+      newErrors.email = 'El correo debe iniciar con A0';
+    } else if (!/^A0[a-zA-Z0-9]{7}@tec\.mx$/i.test(user.email)) {
+      newErrors.email = 'La matricula debe de ser de 9 caracteres';
     }
+
+
 
     // Validación de la contraseña
     if (!user.password) {
       newErrors.password = 'La contraseña es requerida';
-    } else if (user.password.length < 6) {
-      newErrors.password = 'La contraseña debe tener al menos 6 caracteres';
-    } else if (!/\d/.test(user.password)) {
-      newErrors.password = 'La contraseña debe contener al menos un número';
-    } else if (!/[A-Z]/.test(user.password)) {
-      newErrors.password = 'La contraseña debe contener al menos una mayúscula';
+    } else {
+      if (user.password.includes(' ')) {
+        newErrors.password = 'La contraseña no debe contener espacios';
+      } else if (user.password.length < 6) {
+        newErrors.password = 'La contraseña debe tener al menos 6 caracteres';
+      } else if (!/\d/.test(user.password)) {
+        newErrors.password = 'La contraseña debe contener al menos un número';
+      } else if (!/[A-Z]/.test(user.password)) {
+        newErrors.password = 'La contraseña debe contener al menos una mayúscula';
+      }
     }
 
     setErrors(newErrors);
@@ -72,19 +83,23 @@ const RegisterPage = () => {
 
     try {
       const matricula = user.email.split('@')[0].toUpperCase();
+      const formattedName = user.name
+          .trim()
+          .toLowerCase()
+          .split(' ')
+          .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(' ');
 
       const result = await signUp(user.email, user.password, {
-        name: user.name.trim(),
+        name: formattedName,
         role: 'student',
         matricula,
       });
 
       if (!result.success) {
-        // Usar el error original de Firebase
         switch (result.error.code) {
           case 'auth/email-already-in-use':
             setErrors({
-              email: 'Este correo electrónico ya está registrado',
               general: 'Ya existe una cuenta con este correo electrónico'
             });
             break;

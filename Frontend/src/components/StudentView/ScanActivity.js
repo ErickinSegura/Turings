@@ -128,7 +128,7 @@ const ScanActivity = () => {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6">
-            <div className="max-w-3xl mx-auto bg-white rounded-3xl border border-black shadow-md p-6">
+            <div className="max-w-3xl mx-auto bg-white rounded-3xl border border-black p-6">
                 <h1 className="text-2xl font-bold text-gray-900 mb-6">Escanear Actividad</h1>
                 {isScanning ? (
                     <div className="relative w-full h-64 bg-gray-100 rounded-lg overflow-hidden">

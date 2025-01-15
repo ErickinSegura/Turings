@@ -10,15 +10,18 @@ import {
   Loader2,
   X
 } from 'lucide-react';
-import { 
-  collection, 
-  query, 
-  where, 
-  getDocs, 
-  limit, 
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  limit,
   startAfter,
+  orderBy,
   doc,
-  getDoc
+  getDoc,
+  endBefore,
+  limitToLast
 } from 'firebase/firestore';
 import { db } from '../../../firebase';
 import { useNavigate } from 'react-router-dom';
@@ -32,7 +35,9 @@ const StudentsListPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [lastVisible, setLastVisible] = useState(null);
+  const [firstVisible, setFirstVisible] = useState(null);
   const [hasMore, setHasMore] = useState(true);
+  const [hasPrevious, setHasPrevious] = useState(false);
   const [page, setPage] = useState(1);
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState({
@@ -60,61 +65,71 @@ const StudentsListPage = () => {
     fetchGroups();
   }, []);
 
-  // Función modificada para obtener estudiantes con sus grupos
-  const fetchStudents = async (searchQuery = '', isNewSearch = false) => {
+  const fetchStudents = async (searchQuery = '', direction = 'next') => {
     try {
       setLoading(true);
       setError(null);
-      
+
       let studentsQuery = query(
-        collection(db, 'users'),
-        where('role', '==', 'student')
+          collection(db, 'users'),
+          where('role', '==', 'student'),
+          orderBy('name')
       );
 
       if (searchQuery) {
         studentsQuery = query(
-          collection(db, 'users'),
-          where('role', '==', 'student'),
-          where('name', '>=', searchQuery),
-          where('name', '<=', searchQuery + '\uf8ff')
+            collection(db, 'users'),
+            where('role', '==', 'student'),
+            where('name', '>=', searchQuery),
+            where('name', '<=', searchQuery + '\uf8ff'),
+            orderBy('name')
         );
       }
 
-      // Aplicar filtros
       if (filters.group) {
         studentsQuery = query(
-          collection(db, 'users'),
-          where('role', '==', 'student'),
-          where('groupId', '==', filters.group)
+            collection(db, 'users'),
+            where('role', '==', 'student'),
+            where('groupId', '==', filters.group),
+            orderBy('name')
         );
       }
 
-      studentsQuery = query(studentsQuery, limit(STUDENTS_PER_PAGE));
-
-      if (!isNewSearch && lastVisible) {
-        studentsQuery = query(studentsQuery, startAfter(lastVisible));
+      // Lógica de paginación bidireccional
+      if (direction === 'next' && lastVisible) {
+        studentsQuery = query(studentsQuery, startAfter(lastVisible), limit(STUDENTS_PER_PAGE));
+      } else if (direction === 'prev' && firstVisible) {
+        studentsQuery = query(studentsQuery, endBefore(firstVisible), limitToLast(STUDENTS_PER_PAGE));
+      } else {
+        studentsQuery = query(studentsQuery, limit(STUDENTS_PER_PAGE));
       }
 
       const querySnapshot = await getDocs(studentsQuery);
-      
-      const lastDoc = querySnapshot.docs[querySnapshot.docs.length - 1];
-      setLastVisible(lastDoc);
-      setHasMore(querySnapshot.docs.length === STUDENTS_PER_PAGE);
+      const docs = querySnapshot.docs;
 
-      const studentsData = await Promise.all(querySnapshot.docs.map(async studentDoc => {
+      // Actualizar cursores de paginación
+      setFirstVisible(docs[0]);
+      setLastVisible(docs[docs.length - 1]);
+
+      // Verificar si hay más páginas en ambas direcciones
+      const hasMoreNext = docs.length === STUDENTS_PER_PAGE;
+      const hasMorePrev = page > 1;
+      setHasMore(hasMoreNext);
+      setHasPrevious(hasMorePrev);
+
+      const studentsData = await Promise.all(docs.map(async studentDoc => {
         const studentData = {
           id: studentDoc.id,
           ...studentDoc.data()
         };
 
-        // Obtener nombres de grupos
         if (studentData.groupIds && studentData.groupIds.length > 0) {
           const groupNames = await Promise.all(
-            studentData.groupIds.map(async groupId => {
-              const groupRef = doc(db, 'groups', groupId);
-              const groupDoc = await getDoc(groupRef);
-              return groupDoc.exists() ? groupDoc.data().name : groupId;
-            })
+              studentData.groupIds.map(async groupId => {
+                const groupRef = doc(db, 'groups', groupId);
+                const groupDoc = await getDoc(groupRef);
+                return groupDoc.exists() ? groupDoc.data().name : groupId;
+              })
           );
           studentData.groupNames = groupNames;
         }
@@ -122,7 +137,7 @@ const StudentsListPage = () => {
         return studentData;
       }));
 
-      setStudents(isNewSearch ? studentsData : [...students, ...studentsData]);
+      setStudents(studentsData);
     } catch (err) {
       console.error('Error fetching students:', err);
       setError('Error al cargar los estudiantes. Por favor, intenta de nuevo.');
@@ -131,23 +146,50 @@ const StudentsListPage = () => {
     }
   };
 
+
   useEffect(() => {
-    fetchStudents('', true);
-  }, [filters]); // Refetch when filters change
+    fetchStudents('', 'next');
+  }, [filters]);
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      if (searchTerm !== '') {
-        fetchStudents(searchTerm, true);
-      }
+      setFirstVisible(null);
+      setLastVisible(null);
+      setPage(1);
+      setHasMore(true);
+      setHasPrevious(false);
+      fetchStudents(searchTerm, 'next');  // Ahora llamamos a fetchStudents sin importar si searchTerm está vacío
     }, 500);
 
     return () => clearTimeout(timeoutId);
   }, [searchTerm]);
 
+  const loadPrevious = () => {
+    if (page > 1 && !loading) {
+      setPage(prev => prev - 1);
+      fetchStudents(searchTerm, 'prev');
+    }
+  };
+
+  const loadMore = () => {
+    if (!loading && hasMore) {
+      setPage(prev => prev + 1);
+      fetchStudents(searchTerm, 'next');
+    }
+  };
+
   const handleSearch = (e) => {
-    setSearchTerm(e.target.value);
+    const value = e.target.value;
+    setSearchTerm(value);
     setPage(1);
+    setFirstVisible(null);
+    setLastVisible(null);
+    setHasMore(true);
+    setHasPrevious(false);
+
+    if (!value.trim()) {
+      fetchStudents('', 'next');
+    }
   };
 
   const handleFilterChange = (field, value) => {
@@ -164,20 +206,12 @@ const StudentsListPage = () => {
       enrollmentYear: ''
     });
     setPage(1);
+    setFirstVisible(null);
+    setLastVisible(null);
+    setHasMore(true);
+    setHasPrevious(false);
   };
 
-  const loadMore = () => {
-    if (!loading && hasMore) {
-      setPage(prev => prev + 1);
-      fetchStudents(searchTerm);
-    }
-  };
-
-  const loadPrevious = () => {
-    if (page > 1) {
-      setPage(prev => prev - 1);
-    }
-  };
 
   const renderStudents = () => {
     if (loading && students.length === 0) {
@@ -267,7 +301,8 @@ const StudentsListPage = () => {
                 onChange={handleSearch}
               />
             </div>
-            <button 
+
+            <button
               onClick={() => setShowFilters(!showFilters)}
               className="flex items-center px-6 py-2 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors"
             >
@@ -313,26 +348,6 @@ const StudentsListPage = () => {
                     ))}
                   </select>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Año de inscripción
-                  </label>
-                  <select
-                    className="w-full rounded-lg border border-gray-200 p-2"
-                    value={filters.enrollmentYear}
-                    onChange={(e) => handleFilterChange('enrollmentYear', e.target.value)}
-                  >
-                    <option value="">Todos los años</option>
-                    {[...Array(5)].map((_, i) => {
-                      const year = new Date().getFullYear() - i;
-                      return (
-                        <option key={year} value={year}>
-                          {year}
-                        </option>
-                      );
-                    })}
-                  </select>
-                </div>
               </div>
             </div>
           )}
@@ -349,32 +364,35 @@ const StudentsListPage = () => {
         </div>
 
         {students.length > 0 && (
-          <div className="mt-8 flex justify-center gap-4">
-            <button
-              onClick={loadPrevious}
-              disabled={page === 1}
-              className={`flex items-center px-4 py-2 rounded-xl ${
-                page === 1 
-                  ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
-                  : 'bg-white text-gray-700 hover:bg-gray-50'
-              }`}
-            >
-              <ChevronLeft className="w-5 h-5 mr-1" />
-              Anterior
-            </button>
-            <button
-              onClick={loadMore}
-              disabled={!hasMore || loading}
-              className={`flex items-center px-4 py-2 rounded-xl ${
-                !hasMore || loading
-                  ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                  : 'bg-white text-gray-700 hover:bg-gray-50'
-              }`}
-            >
-              Siguiente
-              <ChevronRight className="w-5 h-5 ml-1" />
-            </button>
-          </div>
+            <div className="mt-8 flex justify-center gap-4">
+              <button
+                  onClick={loadPrevious}
+                  disabled={page === 1 || loading}
+                  className={`flex items-center px-4 py-2 rounded-xl ${
+                      page === 1 || loading
+                          ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                          : 'bg-white text-gray-700 hover:bg-gray-50'
+                  }`}
+              >
+                <ChevronLeft className="w-5 h-5 mr-1"/>
+                Anterior
+              </button>
+              <span className="px-4 py-2 text-gray-600">
+        Página {page}
+      </span>
+              <button
+                  onClick={loadMore}
+                  disabled={!hasMore || loading}
+                  className={`flex items-center px-4 py-2 rounded-xl ${
+                      !hasMore || loading
+                          ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                          : 'bg-white text-gray-700 hover:bg-gray-50'
+                  }`}
+              >
+                Siguiente
+                <ChevronRight className="w-5 h-5 ml-1"/>
+              </button>
+            </div>
         )}
       </div>
     </div>

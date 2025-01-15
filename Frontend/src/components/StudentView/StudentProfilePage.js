@@ -18,24 +18,22 @@ import {
 } from 'recharts';
 import useShopTransactions from '../../hooks/UseShopTransactions';
 
-// Stats Card Component
 const StatsCard = ({ icon: Icon, title, value, description }) => (
-    <div className="bg-white rounded-3xl border border-black p-6 hover:shadow-lg transition-all duration-500">
+    <div className="bg-white dark:bg-black rounded-3xl border border-black dark:border-white p-6">
       <div className="flex items-center space-x-4 mb-4">
-        <div className="p-3 bg-gray-700 rounded-xl">
-          <Icon className="w-6 h-6 text-gray-50" />
+        <div className="p-3 bg-gray-800 dark:bg-white rounded-xl">
+          <Icon className="w-6 h-6 text-gray-50 dark:text-gray-800" />
         </div>
-        <h3 className="text-xl font-bold text-gray-900">{title}</h3>
+        <h3 className="text-xl font-bold text-gray-800 dark:text-gray-50">{title}</h3>
       </div>
-      <p className="text-3xl font-semibold text-gray-900 mb-2">{value}</p>
-      <p className="text-gray-500 text-sm">{description}</p>
+      <p className="text-3xl font-semibold text-gray-800 dark:text-gray-50 mb-2">{value}</p>
+      <p className="text-gray-500 dark:text-gray-400 text-sm">{description}</p>
     </div>
 );
 
-// Transaction Chart Card Component
 const ChartCard = ({ title, children }) => (
-    <div className="bg-white rounded-3xl border border-black p-6 hover:shadow-lg transition-all duration-500">
-      <h3 className="text-xl font-bold text-gray-900 mb-6">{title}</h3>
+    <div className="bg-white border-black dark:bg-black dark:border-gray-50 rounded-3xl border p-6">
+      <h3 className="text-xl font-bold text-gray-800 dark:text-gray-50 mb-6">{title}</h3>
       {children}
     </div>
 );
@@ -156,48 +154,52 @@ const ProfilePage = () => {
   };
 
   if (loading) {
-    return <div className="text-lg text-gray-600 flex justify-center items-center min-h-screen">Cargando perfil...</div>;
+    return <div className="min-h-screen bg-gray-50 dark:bg-black flex items-center justify-center">
+      <div className="text-xl text-gray-500 dark:text-gray-400">Cargando perfil...</div>
+    </div>;
   }
 
   if (!studentInfo?.groupId) {
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-black dark:to-black">
           <div className="max-w-7xl mx-auto px-6 py-12">
             <div className="flex justify-between items-start mb-12">
               <div>
-                <h1 className="text-4xl font-bold text-gray-900 mb-3">Mi Perfil</h1>
-                <p className="text-gray-500 text-lg">Gestiona tu información y revisa tus estadísticas</p>
+                <h1 className="text-4xl font-bold text-gray-800 dark:text-gray-50 mb-3">Mi Perfil</h1>
+                <p className="text-gray-500 dark:text-gray-400 text-lg">Gestiona tu información y revisa tus estadísticas</p>
               </div>
 
               <button
                   onClick={handleLogOut}
-                  className="inline-flex items-center px-6 py-3 bg-black text-gray-50 rounded-2xl"
+                  className="inline-flex items-center px-6 py-3 bg-gray-800 text-gray-50 border border-gray-800 rounded-2xl hover:bg-gray-50 hover:text-gray-800 hover:border hover:border-black
+                                                                dark:bg-gray-50 dark:text-gray-800 dark:border dark:border-black dark:hover:border-gray-50 dark:hover:bg-black dark:hover:text-gray-50
+                 transition-all duration-300"
               >
                 Cerrar Sesión
               </button>
             </div>
-            <div className="bg-white rounded-3xl border border-black p-8">
+            <div className="bg-white border-black dark:bg-black dark:border-gray-50 rounded-3xl border p-8">
               <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
-                <div className="p-4 bg-black rounded-2xl">
-                  <User className="w-16 h-16 text-gray-50"/>
+                <div className="p-4 bg-gray-800 dark:bg-gray-50 rounded-2xl">
+                  <User className="w-16 h-16 text-gray-50 dark:text-gray-800"/>
                 </div>
                 <div className="flex-1">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                  <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-50 mb-4">
                     {studentInfo?.name || 'Estudiante'}
                   </h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="flex items-center text-gray-600">
+                    <div className="flex items-center text-gray-500 dark:text-gray-400">
                       <Mail className="w-5 h-5 mr-3"/>
                       {studentInfo?.email || 'Sin correo'}
                     </div>
                   </div>
                 </div>
               </div>
-              <div className="mt-8 text-center p-6 bg-gray-50 rounded-xl">
-                <h3 className="text-xl font-semibold text-gray-800 mb-2">
+              <div className="mt-8 text-center p-6 bg-white dark:bg-black rounded-xl">
+                <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-50 mb-2">
                   No tienes un grupo asignado
                 </h3>
-                <p className="text-gray-600">
+                <p className="text-gray-500 dark:text-gray-400">
                   Por favor, contacta con tu profesor para que te asigne a un grupo.
                 </p>
               </div>
@@ -211,31 +213,33 @@ const ProfilePage = () => {
   const COLORS = ['#0088FE', '#00C49F'];
 
   return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-black dark:to-black">
         <div className="max-w-7xl mx-auto px-6 py-12">
           <div className="flex justify-between items-start mb-12">
             <div>
-              <h1 className="text-4xl font-bold text-gray-900 mb-3">Mi Perfil</h1>
-              <p className="text-gray-500 text-lg">Gestiona tu información y revisa tus estadísticas</p>
+              <h1 className="text-4xl font-bold text-gray-800 dark:text-gray-50 mb-3">Mi Perfil</h1>
+              <p className="text-gray-500 dark:text-gray-400 text-lg">Gestiona tu información y revisa tus estadísticas</p>
             </div>
 
             <button
                 onClick={handleLogOut}
-                className="inline-flex items-center px-6 py-3 bg-gray-800 text-gray-50 border border-gray-800 rounded-2xl hover:bg-gray-50 hover:text-gray-800 hover:border hover:border-black transition-all duration-300"
+                className="inline-flex items-center px-6 py-3 bg-gray-800 text-gray-50 border border-gray-800 rounded-2xl hover:bg-gray-50 hover:text-gray-800 hover:border hover:border-black
+                                                                dark:bg-gray-50 dark:text-gray-800 dark:border dark:border-black dark:hover:border-gray-50 dark:hover:bg-black dark:hover:text-gray-50
+                 transition-all duration-300"
             >
               Cerrar Sesión
             </button>
           </div>
 
-          <div className="bg-white rounded-3xl border border-black shadow-sm p-8 mb-12">
+          <div className="bg-white border-black dark:bg-black dark:border-gray-50 rounded-3xl border shadow-sm p-8 mb-12">
             <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
-              <div className="p-4 bg-gray-800 rounded-2xl">
-                <User className="w-16 h-16 text-gray-50" />
+              <div className="p-4 bg-gray-800 dark:bg-gray-50 rounded-2xl">
+                <User className="w-16 h-16 text-gray-50 dark:text-gray-800" />
               </div>
               <div className="flex-1">
-                <h2 className="text-2xl font-bold text-gray-900 mb-4">{studentInfo?.name || 'Estudiante'}</h2>
+                <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-50 mb-4">{studentInfo?.name || 'Estudiante'}</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="flex items-center text-gray-600">
+                  <div className="flex items-center text-gray-500 dark:text-gray-400">
                     <Mail className="w-5 h-5 mr-3" />
                     {studentInfo?.email || 'Sin correo'}
                   </div>
@@ -289,21 +293,21 @@ const ProfilePage = () => {
                           if (active && payload && payload.length) {
                             const data = payload[0].payload;
                             return (
-                                <div className="bg-white border border-gray-200 p-4 rounded-lg shadow-lg">
-                                  <p className="font-bold">
+                                <div className="bg-white border border-black dark:bg-black dark:border-gray-50 p-4 rounded-lg shadow-lg">
+                                  <p className="font-bold text-gray-800 dark:text-gray-50">
                                     {label.toLocaleDateString('es-ES', {
                                       day: '2-digit',
                                       month: '2-digit',
                                       year: '2-digit'
                                     })}
                                   </p>
-                                  <p className="text-sm text-gray-600">{data.description}</p>
+                                  <p className="text-sm text-gray-500 dark:text-gray-400">{data.description}</p>
                                   <p className={`font-semibold ${
                                       data.amount > 0 ? 'text-green-600' : 'text-red-600'
                                   }`}>
                                     {data.amount > 0 ? '+' : ''}{data.amount} Turings
                                   </p>
-                                  <p className="text-gray-800">Balance: {data.balance} Turings</p>
+                                  <p className="text-gray-800 dark:text-gray-50">Balance: {data.balance} Turings</p>
                                 </div>
                             );
                           }
@@ -354,7 +358,6 @@ const ProfilePage = () => {
                           <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                       ))}
                     </Pie>
-                    <Tooltip />
                   </PieChart>
                 </ResponsiveContainer>
               </div>

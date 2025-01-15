@@ -2,11 +2,14 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/authContext';
 import { Coins } from 'lucide-react';
+import ThemeToggle from "./ThemeToggle";
+import { useTheme } from "../../context/themeContext";
 
 const NavBar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { theme } = useTheme();
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
@@ -62,25 +65,30 @@ const NavBar = () => {
     return [];
   };
 
-  const NavLink = ({ to, children, onClick }) => (
+  const NavLink = ({ children, onClick }) => (
       <div
           onClick={onClick}
-          className="relative text-gray-700 hover:text-gray-50 transition-colors duration-200 px-3 py-2 rounded-lg group cursor-pointer"
+          className="relative text-gray-800 hover:text-gray-50 dark:text-gray-50 dark:hover:text-gray-800 transition-colors duration-200 px-3 py-2 rounded-lg group cursor-pointer"
       >
-        <span className="absolute inset-0 bg-gray-800 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
-        <span className="relative">{children}</span>
+        <span
+            className="absolute inset-0 bg-gray-800 dark:bg-gray-50 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200"/>
+            <span className="relative">{children}</span>
       </div>
   );
 
   return (
-      <nav className="w-full bg-white shadow-lg border-b border-gray-100">
+      <nav className="w-full bg-white dark:bg-black shadow-lg border-b border-gray-50 dark:border-gray-800">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
             <Link to="/" className="flex-shrink-0 group">
               <div className="relative">
                 <div className="absolute -inset-1" />
-                <img src="/images/logo.png" alt="Logo" className="h-12 w-auto relative" />
+                <img
+                    src={theme === 'light' ? "/images/logo.png" : "/images/logo-dark.png"}
+                    alt="Logo"
+                    className="h-12 w-auto relative"
+                />
               </div>
             </Link>
 
@@ -95,18 +103,23 @@ const NavBar = () => {
 
             {/* Desktop User Info */}
             <div className="hidden md:flex items-center space-x-4">
+              {/* Theme Toggle */}
+              <ThemeToggle />
+
               {/* Turing Balance - Only show for students */}
               {user?.role === 'student' && (
-                  <div className="flex items-center bg-gray-800 px-3 py-1 rounded-lg">
-                    <Coins className="w-4 h-4 text-gray-50 mr-2" />
-                    <span className="text-gray-50 font-semibold">{user?.turingBalance || 0} τ</span>
+                  <div className="flex items-center bg-gray-800 dark:bg-gray-50 px-3 py-1 rounded-lg">
+                    <Coins className="w-4 h-4 text-gray-50 dark:text-gray-800 mr-2" />
+                    <span className="text-gray-50 dark:text-gray-800 font-semibold">
+                  {user?.turingBalance || 0} τ
+                </span>
                   </div>
               )}
 
               {/* User Icon */}
               <button
                   onClick={handleProfileNavigation}
-                  className="p-2 rounded-lg text-gray-700 hover:bg-gray-800 hover:text-gray-50 transition-colors duration-200"
+                  className="p-2 rounded-lg text-gray-800 dark:text-gray-50 hover:bg-gray-800 dark:hover:bg-gray-50 hover:text-gray-50 dark:hover:text-gray-800 transition-colors duration-200"
               >
                 <div className="relative">
                   <div className="absolute -inset-1" />
@@ -129,10 +142,11 @@ const NavBar = () => {
             </div>
 
             {/* Mobile Menu Button */}
-            <div className="md:hidden">
+            <div className="md:hidden flex items-center space-x-2">
+              <ThemeToggle />
               <button
                   onClick={toggleMenu}
-                  className="p-2 rounded-lg hover:bg-blue-50 text-gray-700 hover:text-blue-600 transition-colors duration-200 focus:outline-none"
+                  className="p-2 rounded-lg bg-gray-800 text-gray-50 dark:bg-white dark:text-gray-800 transition-colors duration-200 focus:outline-none"
               >
                 {isOpen ? (
                     <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -157,7 +171,7 @@ const NavBar = () => {
               {getNavLinks().map((link, index) => (
                   <div
                       key={index}
-                      className="block px-3 py-2 rounded-lg text-gray-700"
+                      className="block px-3 py-2 rounded-lg text-gray-800 hover:bg-gray-800 hover:text-gray-50 dark:text-gray-50  dark:hover:bg-gray-50  dark:hover:text-gray-800"
                       onClick={() => {
                         link.onClick();
                         toggleMenu();
@@ -166,9 +180,8 @@ const NavBar = () => {
                     {link.label}
                   </div>
               ))}
-              {/* Profile Navigation for Mobile */}
               <div
-                  className="block px-3 py-2 rounded-lg text-gray-700"
+                  className="block px-3 py-2 rounded-lg text-gray-800 hover:bg-gray-800 hover:text-gray-50 dark:text-gray-50  dark:hover:bg-gray-50  dark:hover:text-gray-800"
                   onClick={() => {
                     handleProfileNavigation();
                     toggleMenu();
