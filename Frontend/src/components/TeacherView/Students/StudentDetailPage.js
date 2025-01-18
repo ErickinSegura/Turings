@@ -13,10 +13,9 @@ import {
   BookOpen,
   TrendingUp,
   ShoppingCart,
-  Award, Star
+  Award
 } from 'lucide-react';
-import { Loader2 } from 'lucide-react';
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+
 
 const StatsCard = ({ icon: Icon, title, value, description }) => (
     <div className="bg-white dark:bg-black rounded-3xl border border-black dark:border-white p-6">
