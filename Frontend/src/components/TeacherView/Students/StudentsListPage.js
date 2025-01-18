@@ -215,11 +215,9 @@ const StudentsListPage = () => {
 
   const renderStudents = () => {
     if (loading && students.length === 0) {
-      return (
-        <div className="flex justify-center items-center py-12">
-          <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-        </div>
-      );
+      return <div className="min-h-screen bg-gray-50 dark:bg-black flex justify-center">
+        <div className="text-xl text-gray-500 dark:text-gray-400">Cargando Alumnos...</div>
+      </div>;
     }
 
     if (students.length === 0) {
@@ -233,30 +231,30 @@ const StudentsListPage = () => {
     return students.map((student) => (
       <div
       key={student.id}
-      className="bg-white rounded-3xl border border-black p-6 hover:shadow-lg transition-all duration-500 cursor-pointer"
+      className="bg-white border-black dark:bg-black dark:border-white rounded-3xl border p-6 hover:shadow-lg transition-all duration-500 cursor-pointer"
       onClick={() => navigate(`/estudiantes/${student.id}`)}
     >
         <div className="flex flex-col md:flex-row gap-6">
-          <div className="p-4 bg-gray-800 rounded-xl">
-            <GraduationCap className="w-12 h-12 text-gray-50" />
+          <div className="p-4 bg-gray-800 dark:bg-gray-50 rounded-xl">
+            <GraduationCap className="w-12 h-12 text-gray-50 dark:text-gray-800" />
           </div>
           <div className="flex-1">
-            <h3 className="text-xl font-bold text-gray-900 mb-4">
+            <h3 className="text-xl font-bold text-gray-800 dark:text-gray-50 mb-4">
               {student.name}
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="flex items-center text-gray-600">
+              <div className="flex items-center text-gray-500 dark:text-gray-400">
                 <Mail className="w-5 h-5 mr-3" />
                 {student.email}
               </div>
-              <div className="flex items-center text-gray-600">
+              <div className="flex items-center text-gray-500 dark:text-gray-400">
                 <Building2 className="w-5 h-5 mr-3" />
                 Matrícula: {student.matricula}
               </div>
             </div>
             {student.groupName && student.groupName.length > 0 && (
               <div className="mt-4">
-                <h4 className="text-sm font-semibold text-gray-700 mb-2">Grupos Inscritos:</h4>
+                <h4 className="text-sm font-semibold text-gray-800 mb-2">Grupos Inscritos:</h4>
                 <div className="flex flex-wrap gap-2">
                   {student.groupNames.map((groupName, index) => (
                     <span
@@ -276,27 +274,30 @@ const StudentsListPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-black dark:to-black">
       <div className="max-w-7xl mx-auto px-6 py-12">
         <div className="flex justify-between items-start mb-12">
           <div>
-            <h1 className="text-4xl font-bold text-gray-900 mb-3">
+            <h1 className="text-4xl font-bold text-gray-800 dark:text-gray-50 mb-3">
               Estudiantes
             </h1>
-            <p className="text-gray-500 text-lg">
+            <p className="text-gray-500 dark:text-gray-400 text-lg">
               Lista completa de estudiantes en la plataforma
             </p>
           </div>
         </div>
 
-        <div className="bg-white rounded-3xl border border-black p-6 mb-8">
+        <div className="bg-white border-black dark:bg-black dark:border-white rounded-3xl border  p-6 mb-8">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1 relative">
-              <Search className="absolute left-4 top-3 w-5 h-5 text-gray-400" />
+              <Search className="absolute left-4 top-3 w-5 h-5 text-gray-500 dark:text-gray-400" />
               <input
                 type="text"
                 placeholder="Buscar por nombre..."
-                className="w-full pl-12 pr-4 py-2 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+                className="bg-white dark:bg-black w-full pl-12 pr-4 py-2 rounded-xl border border-gray-200 focus:border-gray-500 focus:ring-1 outline-none
+                                                                      dark:border-gray-100 dark:focus:border-gray-400
+                                                                      dark:text-gray-50
+                "
                 value={searchTerm}
                 onChange={handleSearch}
               />
@@ -304,12 +305,15 @@ const StudentsListPage = () => {
 
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className="flex items-center px-6 py-2 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors"
+              className="flex items-center px-6 py-2 rounded-xl transition-colors
+                    bg-gray-800 text-gray-50 border border-gray-800 hover:bg-gray-50 hover:text-gray-800 hover:border hover:border-black
+                    dark:bg-gray-50 dark:text-gray-800 dark:border dark:border-gray-50 dark:hover:border-gray-50 dark:hover:bg-black dark:hover:text-gray-50
+              "
             >
               <Filter className="w-5 h-5 mr-2" />
               Filtros
               {Object.values(filters).some(value => value !== '') && (
-                <span className="ml-2 px-2 py-0.5 bg-blue-500 text-white rounded-full text-xs">
+                <span className="ml-2 px-2 py-0.5 bg-gray-500 dark:bg-gray-400 text-gray-50 rounded-full text-xs">
                   {Object.values(filters).filter(value => value !== '').length}
                 </span>
               )}
@@ -317,13 +321,13 @@ const StudentsListPage = () => {
           </div>
 
           {showFilters && (
-            <div className="mt-4 p-4 bg-gray-50 rounded-xl">
+            <div className="mt-4 p-4 bg-gray-50 dark:bg-black rounded-xl">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="font-semibold">Filtros</h3>
+                <h3 className="font-semibold dark:text-gray-50">Filtros</h3>
                 {Object.values(filters).some(value => value !== '') && (
                   <button
                     onClick={clearFilters}
-                    className="text-sm text-gray-500 hover:text-gray-700 flex items-center"
+                    className="text-sm text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-50 flex items-center"
                   >
                     <X className="w-4 h-4 mr-1" />
                     Limpiar filtros
@@ -332,19 +336,19 @@ const StudentsListPage = () => {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-800 dark:text-gray-50 mb-1">
                     Grupo
                   </label>
                   <select
-                    className="w-full rounded-lg border border-gray-200 p-2"
-                    value={filters.group}
-                    onChange={(e) => handleFilterChange('group', e.target.value)}
+                      className="w-full rounded-lg border bg-white border-black dark:border-gray-50 dark:bg-black p-2 dark:text-gray-50"
+                      value={filters.group}
+                      onChange={(e) => handleFilterChange('group', e.target.value)}
                   >
-                    <option value="">Todos los grupos</option>
+                    <option value="" className="dark:text-white">Todos los grupos</option>
                     {groups.map(group => (
-                      <option key={group.id} value={group.id}>
-                        {group.name}
-                      </option>
+                        <option key={group.id} value={group.id} className="dark:text-gray-50">
+                          {group.name}
+                        </option>
                     ))}
                   </select>
                 </div>
@@ -354,9 +358,9 @@ const StudentsListPage = () => {
         </div>
 
         {error && (
-          <div className="bg-red-50 text-red-600 p-4 rounded-xl mb-6">
-            {error}
-          </div>
+            <div className="bg-red-50 text-red-600 p-4 rounded-xl mb-6">
+              {error}
+            </div>
         )}
 
         <div className="space-y-4">
@@ -370,14 +374,14 @@ const StudentsListPage = () => {
                   disabled={page === 1 || loading}
                   className={`flex items-center px-4 py-2 rounded-xl ${
                       page === 1 || loading
-                          ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                          : 'bg-white text-gray-700 hover:bg-gray-50'
+                          ? 'text-gray-400 dark:text-gray-500 cursor-not-allowed'
+                          : 'text-gray-800 dark:text-gray-50'
                   }`}
               >
                 <ChevronLeft className="w-5 h-5 mr-1"/>
                 Anterior
               </button>
-              <span className="px-4 py-2 text-gray-600">
+              <span className="px-4 py-2 text-gray-500 dark:text-gray-400">
         Página {page}
       </span>
               <button
@@ -385,8 +389,8 @@ const StudentsListPage = () => {
                   disabled={!hasMore || loading}
                   className={`flex items-center px-4 py-2 rounded-xl ${
                       !hasMore || loading
-                          ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                          : 'bg-white text-gray-700 hover:bg-gray-50'
+                          ? 'text-gray-400 dark:text-gray-500 cursor-not-allowed'
+                          : 'text-gray-800 dark:text-gray-50'
                   }`}
               >
                 Siguiente

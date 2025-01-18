@@ -8,17 +8,28 @@ import {
   GraduationCap,
   Mail,
   Building2,
-  Calendar,
   Phone,
-  MapPin,
   Clock,
   BookOpen,
   TrendingUp,
   ShoppingCart,
-  Award
+  Award, Star
 } from 'lucide-react';
 import { Loader2 } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+
+const StatsCard = ({ icon: Icon, title, value, description }) => (
+    <div className="bg-white dark:bg-black rounded-3xl border border-black dark:border-white p-6">
+      <div className="flex items-center space-x-4 mb-4">
+        <div className="p-3 bg-gray-800 dark:bg-white rounded-xl">
+          <Icon className="w-6 h-6 text-gray-50 dark:text-gray-800" />
+        </div>
+        <h3 className="text-xl font-bold text-gray-800 dark:text-gray-50">{title}</h3>
+      </div>
+      <p className="text-3xl font-semibold text-gray-800 dark:text-gray-50 mb-2">{value}</p>
+      <p className="text-gray-500 dark:text-gray-400 text-sm">{description}</p>
+    </div>
+);
 
 const StudentDetailPage = () => {
   const { studentId } = useParams();
@@ -48,7 +59,6 @@ const StudentDetailPage = () => {
           ...studentDoc.data()
         };
 
-        // Fetch group details if student has a group
         if (studentData.groupId) {
           const groupRef = doc(db, 'groups', studentData.groupId);
           const groupDoc = await getDoc(groupRef);
@@ -57,11 +67,9 @@ const StudentDetailPage = () => {
         }
 
 
-        // Fetch transactions
         const studentTransactions = await getStudentTransactions(studentId);
         setTransactions(studentTransactions);
 
-        // Fetch completed activities
         const completedActivitiesRef = doc(db, 'users', studentId);
         const completedActivitiesDoc = await getDoc(completedActivitiesRef);
         const activitiesData = completedActivitiesDoc.data()?.completedActivities || [];
@@ -89,11 +97,9 @@ const StudentDetailPage = () => {
   }, [studentId]);
 
   if (loading) {
-    return (
-        <div className="min-h-screen flex justify-center items-center">
-          <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-        </div>
-    );
+    return <div className="min-h-screen bg-gray-50 dark:bg-black flex items-center justify-center">
+      <div className="text-xl text-gray-500 dark:text-gray-400">Cargando Alumno...</div>
+    </div>;
   }
 
   if (error) {
@@ -115,51 +121,43 @@ const StudentDetailPage = () => {
 
   if (!student) return null;
 
-  // Prepare transaction data for chart
-  const transactionData = transactions
-      .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp))
-      .map((transaction, index) => ({
-        name: `Compra ${index + 1}`,
-        amount: transaction.totalPrice
-      }));
-
   return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-black dark:to-black">
         <div className="max-w-5xl mx-auto px-6 py-12">
-          <div className="bg-white rounded-3xl border border-black p-8 shadow-sm">
+          <div className="bg-white dark:bg-black rounded-3xl border border-black dark:border-white p-8 shadow-sm">
             <div className="flex flex-col md:flex-row gap-8">
-              <div className="p-6 bg-gray-800 rounded-2xl h-fit">
-                <GraduationCap className="w-16 h-16 text-gray-50" />
+              <div className="p-6 bg-gray-800 dark:bg-gray-50 rounded-2xl h-fit text-center">
+                <GraduationCap className="w-16 h-16 text-gray-50 dark:text-gray-800" />
               </div>
 
               <div className="flex-1">
-                <h1 className="text-3xl font-bold text-gray-900 mb-6">
+                <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-50 mb-6">
                   {student.name}
                 </h1>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-4">
-                    <div className="flex items-center text-gray-600">
+                    <div className="flex items-center text-gray-600 dark:text-gray-500">
                       <Building2 className="w-5 h-5 mr-3 flex-shrink-0" />
                       <div>
-                        <p className="text-sm text-gray-500">Matrícula</p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">Matrícula</p>
                         <p className="font-medium">{student.matricula}</p>
                       </div>
                     </div>
 
-                    <div className="flex items-center text-gray-600">
+                    <div className="flex items-center text-gray-600 dark:text-gray-500">
                       <Mail className="w-5 h-5 mr-3 flex-shrink-0" />
                       <div>
-                        <p className="text-sm text-gray-500">Email</p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">Email</p>
                         <p className="font-medium">{student.email}</p>
                       </div>
                     </div>
 
                     {student.phone && (
-                        <div className="flex items-center text-gray-600">
+                        <div className="flex items-center text-gray-600 dark:text-gray-500">
                           <Phone className="w-5 h-5 mr-3 flex-shrink-0" />
                           <div>
-                            <p className="text-sm text-gray-500">Teléfono</p>
+                            <p className="text-sm text-gray-500 dark:text-gray-400">Teléfono</p>
                             <p className="font-medium">{student.phone}</p>
                           </div>
                         </div>
@@ -168,10 +166,10 @@ const StudentDetailPage = () => {
 
                   <div className="space-y-4">
                     {student.status && (
-                        <div className="flex items-center text-gray-600">
+                        <div className="flex items-center text-gray-600 dark:text-gray-500">
                           <Clock className="w-5 h-5 mr-3 flex-shrink-0" />
                           <div>
-                            <p className="text-sm text-gray-500">Estado</p>
+                            <p className="text-sm text-gray-500 dark:text-gray-400">Estado</p>
                             <p className="font-medium">{student.status}</p>
                           </div>
                         </div>
@@ -182,13 +180,13 @@ const StudentDetailPage = () => {
                 {student.groupName && (
                     <div className="mt-8">
                       <div className="flex items-center mb-4">
-                        <BookOpen className="w-5 h-5 mr-2 text-gray-600" />
-                        <h2 className="text-xl font-semibold text-gray-900">
+                        <BookOpen className="w-5 h-5 mr-2 text-gray-600 dark:text-gray-500" />
+                        <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-50">
                           Grupo Inscrito
                         </h2>
                       </div>
                       <div className="flex">
-      <span className="px-4 py-2 bg-blue-50 text-blue-700 rounded-xl text-sm font-medium">
+      <span className="px-4 py-2 bg-gray-800 text-gray-50 dark:bg-gray-50 dark:text-gray-800 rounded-xl text-sm font-medium">
         {student.groupName}
       </span>
                       </div>
@@ -200,74 +198,56 @@ const StudentDetailPage = () => {
 
             {/* New Statistics Section */}
             <div className="mt-12">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Estadísticas del Estudiante</h2>
+              <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-50 mb-6">Estadísticas del Estudiante</h2>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {/* Turing Balance Card */}
-                <div className="bg-blue-50 p-6 rounded-xl">
-                  <div className="flex items-center mb-4">
-                    <TrendingUp className="w-6 h-6 mr-2 text-blue-600" />
-                    <h3 className="text-lg font-semibold text-gray-800">Balance de Turing</h3>
-                  </div>
-                  <p className="text-3xl font-bold text-blue-700">{student.turingBalance} τ</p>
-                  <p className="text-sm text-gray-600">Balance actual</p>
-                </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                <StatsCard
+                    icon={TrendingUp}
+                    title="Balance de Turing"
+                    value={student.turingBalance}
+                    description="Balance actual"/>
 
-                {/* Transactions Card */}
-                <div className="bg-green-50 p-6 rounded-xl">
-                  <div className="flex items-center mb-4">
-                    <ShoppingCart className="w-6 h-6 mr-2 text-green-600" />
-                    <h3 className="text-lg font-semibold text-gray-800">Compras</h3>
-                  </div>
-                  <p className="text-3xl font-bold text-green-700">{transactions.length}</p>
-                  <p className="text-sm text-gray-600">Total de compras realizadas</p>
-                </div>
+                <StatsCard
+                    icon={ShoppingCart}
+                    title="Compras"
+                    value={transactions.length}
+                    description="Total de compras realizadas"/>
 
-                {/* Activities Card */}
-                <div className="bg-purple-50 p-6 rounded-xl">
-                  <div className="flex items-center mb-4">
-                    <Award className="w-6 h-6 mr-2 text-purple-600" />
-                    <h3 className="text-lg font-semibold text-gray-800">Actividades</h3>
-                  </div>
-                  <p className="text-3xl font-bold text-purple-700">{completedActivities.length}</p>
-                  <p className="text-sm text-gray-600">Actividades completadas</p>
-                </div>
+                <StatsCard
+                    icon={Award}
+                    title="Actividades"
+                    value={completedActivities.length}
+                    description="Actividades completadas"/>
               </div>
 
-              {/* Transaction Chart */}
-              {transactions.length > 0 && (
-                  <div className="mt-8 bg-gray-50 p-6 rounded-xl">
-                    <h3 className="text-lg font-semibold text-gray-800 mb-4">Historial de Compras</h3>
-                    <ResponsiveContainer width="100%" height={300}>
-                      <LineChart data={transactionData}>
-                        <XAxis dataKey="name" />
-                        <YAxis />
-                        <Tooltip />
-                        <Line type="monotone" dataKey="amount" stroke="#3B82F6" />
-                      </LineChart>
-                    </ResponsiveContainer>
-                  </div>
-              )}
 
-              {/* Completed Activities */}
               {completedActivities.length > 0 && (
-                  <div className="mt-8 bg-gray-50 p-6 rounded-xl">
-                    <h3 className="text-lg font-semibold text-gray-800 mb-4">Actividades Completadas</h3>
+                  <div className="mt-8 bg-white dark:bg-black border border-black dark:border-white p-6 rounded-xl">
+                    <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-50 mb-4">
+                      Actividades Completadas
+                    </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {completedActivities.map((activity, index) => (
-                          <div key={index} className="bg-white p-4 rounded-lg shadow-sm border">
-                            <p className="font-medium text-gray-800">{activity.name}</p>
-                            <p className="text-sm text-gray-600">+{activity.turingBalance} τ</p>
+                          <div
+                              key={index}
+                              className="bg-gray-50 dark:bg-black p-4 rounded-lg shadow-sm border border-black dark:border-white"
+                          >
+                            <p className="font-medium text-gray-800 dark:text-gray-50">
+                              {activity.title || activity.name || 'Actividad sin nombre'}
+                            </p>
+                            <p className="text-sm text-gray-500 dark:text-gray-400">
+                              +{activity.turingBalance} τ
+                            </p>
                           </div>
                       ))}
                     </div>
                   </div>
               )}
+              </div>
             </div>
           </div>
         </div>
-      </div>
-  );
-};
+        );
+        };
 
-export default StudentDetailPage;
+        export default StudentDetailPage;
