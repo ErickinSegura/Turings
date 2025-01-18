@@ -11,8 +11,8 @@ const GroupShopPage = () => {
 
     if (loading) {
         return (
-            <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-                <div className="text-lg text-gray-600">Cargando productos...</div>
+            <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-black dark:to-black">
+                <div className="text-xl text-gray-500 dark:text-gray-400">Cargando productos...</div>
             </div>
         );
     }

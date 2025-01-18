@@ -91,10 +91,6 @@ const GroupDetailView = () => {
   const { groupId } = useParams();
   const navigate = useNavigate();
   const { group, loading, error, deactivateGroup } = useGroupDetails(groupId);
-  const { user } = useAuth();
-
-  const isTeacher = user?.role === 'teacher' || user?.isTeacher;
-
   const handleDeactivateGroup = async () => {
     if (window.confirm('¿Estás seguro de que deseas desactivar este grupo? Esta acción eliminará la asignación de grupo de todos los estudiantes y pondrá su balance de Turings en 0.')) {
       await deactivateGroup();

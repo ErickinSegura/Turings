@@ -1,21 +1,21 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useGroupDetails } from '../../hooks/UseGroupDetails';
-import { Trophy, Star, Users } from 'lucide-react';
+import { Trophy, Star, Medal } from 'lucide-react';
+import {useAuth} from "../../context/authContext";
 
 const StatsCard = ({ icon: Icon, title, value, description }) => (
-    <div className="bg-white rounded-3xl border border-black p-6">
+    <div className="bg-white border-black dark:bg-black dark:border-white rounded-3xl border p-6">
         <div className="flex items-center space-x-4 mb-4">
-            <div className="p-3 bg-gray-700 rounded-xl">
-                <Icon className="w-6 h-6 text-gray-50" />
+            <div className="p-3 bg-gray-800 dark:bg-gray-50 rounded-xl">
+                <Icon className="w-6 h-6 text-gray-50 dark:text-gray-800" />
             </div>
-            <h3 className="text-xl font-bold text-gray-900">{title}</h3>
+            <h3 className="text-xl font-bold text-gray-800 dark:text-gray-50 ">{title}</h3>
         </div>
-        <p className="text-3xl font-semibold text-gray-900 mb-2">{value}</p>
-        <p className="text-gray-500 text-sm">{description}</p>
+        <p className="text-3xl font-semibold text-gray-800 dark:text-gray-50 mb-2">{value}</p>
+        <p className="text-gray-500 dark:text-gray-400 text-sm">{description}</p>
     </div>
 );
-
 
 const PodiumPosition = ({ player, place }) => {
     const heights = {
@@ -36,10 +36,10 @@ const PodiumPosition = ({ player, place }) => {
                 <div className={`w-14 h-14 rounded-full bg-gradient-to-br ${colors[place]} flex items-center justify-center `}>
                     <span className="text-white text-xl font-bold">#{place || '?'}</span>
                 </div>
-                <span className="font-semibold text-gray-900 text-center max-w-[100px] truncate text-sm p-1">
+                <span className="font-semibold text-gray-800 dark:text-gray-50 text-center max-w-[100px] truncate text-sm p-1">
                     {player?.name || 'Sin nombre'}
                 </span>
-                <span className="text-gray-900 font-medium text-sm">
+                <span className="text-gray-800 dark:text-gray-50 font-medium text-sm">
                     {player?.turingBalance || 0} τ
                 </span>
             </div>
@@ -51,7 +51,8 @@ const PodiumPosition = ({ player, place }) => {
 
 const PuntajesPage = () => {
     const { groupId } = useParams();
-    const { group, loading, error } = useGroupDetails(groupId);
+    const { group, loading: groupLoading, error } = useGroupDetails(groupId);
+    const { user } = useAuth();
 
     const stats = React.useMemo(() => {
         if (!group?.students?.length) return null;
@@ -64,20 +65,22 @@ const PuntajesPage = () => {
             0
         );
 
+        const userPosition = sortedStudents.findIndex(student => student.uid === user?.uid) + 1;
+
         return {
             topUsers: sortedStudents,
             totalTurings,
             averageTurings: totalTurings / sortedStudents.length,
+            userPosition: userPosition || '-',
             totalStudents: sortedStudents.length
         };
-    }, [group?.students]);
+    }, [group?.students, user?.uid]);
 
-    if (loading || error || !stats) {
+    if (groupLoading || error || !stats) {
         return (
-
-            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
-                <div className={`text-lg ${error ? 'text-red-600' : ' text-gray-600'}`}>
-                    {loading ? 'Cargando datos...' :
+            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 dark:from-black dark:to-black">
+                <div className={`text-xl ${error ? 'text-red-600' : ' text-gray-500 dark:text-gray-400'}`}>
+                    {groupLoading ? 'Cargando datos...' :
                         error ? `Error: ${error}` :
                             'No hay datos disponibles'}
                 </div>
@@ -85,20 +88,19 @@ const PuntajesPage = () => {
         );
     }
 
-    const podiumOrder = [2, 1, 3]; // Silver, Gold, Bronze
+    const podiumOrder = [2, 1, 3];
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-black dark:to-black">
             <div className="max-w-7xl mx-auto px-6 py-12">
                 <div>
-                    <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2 sm:mb-3">
+                    <h1 className="text-3xl sm:text-4xl font-bold text-gray-800 dark:text-gray-50 mb-2 sm:mb-3">
                         Tabla de mejores posiciones
                     </h1>
-                    <p className="text-gray-500 text-base sm:text-lg">
+                    <p className="text-gray-500 dark:text-gray-400 text-base sm:text-lg">
                         Los maestros de los Turings
                     </p>
                 </div>
-
 
                 {/* Stats Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 pt-8">
@@ -115,14 +117,14 @@ const PuntajesPage = () => {
                         description="Promedio de Turings por estudiante"
                     />
                     <StatsCard
-                        icon={Users}
-                        title="Participantes"
-                        value={stats.totalStudents}
-                        description="Total de estudiantes en el grupo"
+                        icon={Medal}
+                        title="Tu posición"
+                        value={`#${stats.userPosition}`}
+                        description={`de ${stats.totalStudents} participantes`}
                     />
                 </div>
 
-                <div className="bg-white rounded-3xl border border-black p-8 pt-24 mb-8">
+                <div className="bg-white border-black dark:bg-black dark:border-white rounded-3xl border p-8 pt-24 mb-8">
                     {/* Podium */}
                     <div className="flex justify-center items-end gap-4 h-72 mb-8">
                         {podiumOrder.map((position) => (
@@ -139,18 +141,18 @@ const PuntajesPage = () => {
                         <div className="space-y-3">
                             {stats.topUsers.slice(3, 5).map((player, index) => (
                                 <div
-                                    key={player.id || index}
-                                    className="group bg-white rounded-2xl overflow-hidden p-4 border border-black"
+                                    key={player.uid || index}
+                                    className="group bg-white border-black dark:bg-black dark:border-white rounded-2xl overflow-hidden p-4 border"
                                 >
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-4">
                                             <div
-                                                className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-700 text-gray-50 font-semibold">
+                                                className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-800 text-gray-50 dark:bg-gray-50 dark:text-gray-800 font-semibold">
                                                 {index + 4}
                                             </div>
-                                            <span className="font-medium text-gray-900">{player.name}</span>
+                                            <span className="font-medium text-gray-800 dark:text-gray-50">{player.name}</span>
                                         </div>
-                                        <span className="text-black font-medium">{player.turingBalance} τ</span>
+                                        <span className="text-gray-800 dark:text-gray-50 font-medium">{player.turingBalance} τ</span>
                                     </div>
                                 </div>
                             ))}
