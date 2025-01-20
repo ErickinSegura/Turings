@@ -9,12 +9,76 @@ import {
   GraduationCap,
   Mail,
   Hash,
+  Clock,
   Coins,
   Terminal,
   ShoppingBag,
   ArrowRight,
 } from 'lucide-react';
-import { useAuth } from "../../context/authContext";
+
+const ScheduleDisplay = ({ schedule, classroom }) => {
+  const scheduleByDay = schedule.reduce((acc, slot) => {
+    const [day, time] = slot.split(' ');
+    if (!acc[day]) acc[day] = [];
+    acc[day].push(time);
+    return acc;
+  }, {});
+
+  return (
+      <div className="container mx-auto p-4">
+        <div className="flex flex-col md:flex-row justify-between gap-4">
+          {/* Lado izquierdo - Horario */}
+          <div className="flex-1">
+            <div className="grid grid-cols-1 gap-4">
+              {Object.entries(scheduleByDay).map(([day, times]) => (
+                  <div
+                      key={day}
+                      className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200"
+                  >
+                    <div className="flex items-start space-x-4">
+                      <div className="flex-shrink-0">
+                        <div className="p-3 bg-gray-800 rounded-lg">
+                          <Clock className="w-5 h-5 text-white" />
+                        </div>
+                      </div>
+                      <div className="flex-grow">
+                        <h4 className="text-lg font-semibold text-gray-900 mb-3">
+                          {day}
+                        </h4>
+                        <div className="flex flex-wrap gap-2">
+                          {times.sort().map((time) => (
+                              <span
+                                  key={`${day}-${time}`}
+                                  className="inline-flex items-center px-3 py-1.5 bg-blue-50 text-blue-700 rounded-full text-sm font-medium hover:bg-blue-100 transition-colors duration-200"
+                              >
+                          {time}
+                        </span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Lado derecho - Salón */}
+          <div className="md:w-64">
+            <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+              <div className="flex flex-col items-center">
+                <h4 className="text-lg font-semibold text-gray-900 mb-3">
+                  Salón
+                </h4>
+                <span className="text-2xl font-bold text-blue-700">
+                {classroom || 'Sin asignar'}
+              </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+  );
+};
 
 const StatsCard = ({ icon: Icon, title, value, subtitle }) => (
     <div className="bg-white rounded-3xl border border-black p-4 sm:p-6">
@@ -137,15 +201,19 @@ const GroupDetailView = () => {
               <h1 className="text-2xl sm:text-4xl font-bold text-gray-900 mb-2 sm:mb-3">
                 Grupo {groupNumber}
               </h1>
+
               <p className="text-gray-500 text-base sm:text-lg">
-                {group?.schedule || 'Horario no definido'} • Sala {group?.classroom || 'Sin asignar'}
+                <ScheduleDisplay
+                    schedule={JSON.parse(group?.schedule || '[]')}
+                    classroom={group?.classroom || 'Sin asignar'}
+                />
               </p>
             </div>
           </div>
 
           {/* Stats Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-12">
-            <StatsCard
+          <StatsCard
                 icon={Users}
                 title="Total de Estudiantes"
                 value={group?.students?.length || 0}

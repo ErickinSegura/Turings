@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { doc, updateDoc, getDoc, collection, getDocs } from 'firebase/firestore';
 import { db } from '../../firebase';
@@ -40,6 +40,9 @@ const EditGroupForm = () => {
   const [showStudentSelector, setShowStudentSelector] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saveStatus, setSaveStatus] = useState(null);
+  const [isSelecting, setIsSelecting] = useState(false);
+  const [selectionStart, setSelectionStart] = useState(null);
+  const isDragging = useRef(false);
 
   useEffect(() => {
     const fetchGroupData = async () => {
@@ -85,12 +88,64 @@ const EditGroupForm = () => {
     fetchAvailableStudents();
   }, [groupId]);
 
+  const getTimeSlotKey = (day, hour) => `${day} ${hour}`;
+
   const toggleTimeSlot = (day, hour) => {
-    const timeSlot = `${day} ${hour}`;
+    const timeSlot = getTimeSlotKey(day, hour);
     setSelectedSchedule((prev) =>
         prev.includes(timeSlot) ? prev.filter((slot) => slot !== timeSlot) : [...prev, timeSlot]
     );
   };
+
+  const handleMouseDown = (day, hour) => {
+    const timeSlot = getTimeSlotKey(day, hour);
+    isDragging.current = true;
+    setIsSelecting(!selectedSchedule.includes(timeSlot));
+    setSelectionStart(timeSlot);
+    toggleTimeSlot(day, hour);
+  };
+
+  const handleMouseEnter = (day, hour) => {
+    if (isDragging.current) {
+      const timeSlot = getTimeSlotKey(day, hour);
+      const [startDay, startHour] = selectionStart.split(' ');
+
+      // Solo procesar si estamos en el mismo día
+      if (startDay === day) {
+        const startIndex = HOURS.indexOf(startHour);
+        const currentIndex = HOURS.indexOf(hour);
+        const start = Math.min(startIndex, currentIndex);
+        const end = Math.max(startIndex, currentIndex);
+
+        // Crear un nuevo conjunto de slots seleccionados, manteniendo las selecciones de otros días
+        const newSchedule = selectedSchedule.filter(slot => !slot.startsWith(day));
+
+        // Agregar todas las horas intermedias del día actual
+        for (let i = start; i <= end; i++) {
+          const currentSlot = getTimeSlotKey(day, HOURS[i]);
+          if (isSelecting) {
+            newSchedule.push(currentSlot);
+          }
+        }
+
+        setSelectedSchedule(newSchedule);
+      }
+    }
+  };
+
+  const handleMouseUp = () => {
+    isDragging.current = false;
+  };
+
+// Agrega el efecto para manejar el mouse up global
+  useEffect(() => {
+    const handleGlobalMouseUp = () => {
+      isDragging.current = false;
+    };
+
+    window.addEventListener('mouseup', handleGlobalMouseUp);
+    return () => window.removeEventListener('mouseup', handleGlobalMouseUp);
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -233,17 +288,30 @@ const EditGroupForm = () => {
                   {DAYS.map((day) => (
                       <tr key={day}>
                         <td className="p-2 font-semibold">{day}</td>
-                        {HOURS.map((hour) => (
-                            <td
-                                key={`${day}-${hour}`}
-                                className={`p-2 cursor-pointer text-center transition-all duration-200 ${
-                                    selectedSchedule.includes(`${day} ${hour}`)
-                                        ? 'bg-blue-500 text-white rounded-xl'
-                                        : 'hover:bg-gray-100 rounded-xl'
-                                }`}
-                                onClick={() => toggleTimeSlot(day, hour)}
-                            />
-                        ))}
+                        {HOURS.map((hour, hourIndex) => {
+                          const isSelected = selectedSchedule.includes(`${day} ${hour}`);
+                          const nextHourSelected = hourIndex < HOURS.length - 1 &&
+                              selectedSchedule.includes(`${day} ${HOURS[hourIndex + 1]}`);
+                          const prevHourSelected = hourIndex > 0 &&
+                              selectedSchedule.includes(`${day} ${HOURS[hourIndex - 1]}`);
+
+                          return (
+                              <td
+                                  key={`${day}-${hour}`}
+                                  className={`p-2 cursor-pointer text-center transition-all duration-200
+                  ${isSelected ? 'bg-blue-500 text-white' : 'hover:bg-gray-100'}
+                  ${isSelected && nextHourSelected ? 'rounded-r-none' : ''}
+                  ${isSelected && prevHourSelected ? 'rounded-l-none' : ''}
+                  ${isSelected && !nextHourSelected && !prevHourSelected ? 'rounded-xl' : ''}
+                  ${isSelected && prevHourSelected && nextHourSelected ? '' : ''}
+                  ${isSelected && prevHourSelected && !nextHourSelected ? 'rounded-r-xl' : ''}
+                  ${isSelected && !prevHourSelected && nextHourSelected ? 'rounded-l-xl' : ''}`}
+                                  onMouseDown={() => handleMouseDown(day, hour)}
+                                  onMouseEnter={() => handleMouseEnter(day, hour)}
+                                  onMouseUp={handleMouseUp}
+                              />
+                          );
+                        })}
                       </tr>
                   ))}
                   </tbody>
@@ -264,7 +332,7 @@ const EditGroupForm = () => {
                       onClick={() => setShowStudentSelector(!showStudentSelector)}
                       className="p-2 bg-gray-800 text-white rounded-xl hover:bg-gray-700 transition-all duration-200 flex items-center space-x-2"
                   >
-                    <UserPlus className="w-5 h-5" />
+                    <UserPlus className="w-5 h-5"/>
                     <span>Agregar Estudiante</span>
                   </button>
                 </div>
@@ -272,7 +340,7 @@ const EditGroupForm = () => {
                 {showStudentSelector && (
                     <div className="bg-gray-50 rounded-xl p-4">
                       <div className="flex items-center mb-4">
-                        <Search className="w-5 h-5 text-gray-400 mr-2" />
+                        <Search className="w-5 h-5 text-gray-400 mr-2"/>
                         <input
                             type="text"
                             placeholder="Buscar estudiantes..."
