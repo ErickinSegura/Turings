@@ -11,14 +11,14 @@ const HOURS = Array.from({ length: 14 }, (_, i) => {
 });
 
 const SectionCard = ({ icon: Icon, title, description, children }) => (
-    <div className="bg-white rounded-3xl overflow-hidden border border-black shadow-sm p-8 mb-6">
+    <div className="bg-white rounded-3xl overflow-hidden border border-black dark:bg-black dark:border-white shadow-sm p-8 mb-6">
       <div className="flex items-center mb-6">
-        <div className="p-3 bg-gray-800 rounded-2xl mr-4">
-          <Icon className="w-6 h-6 text-gray-50" />
+        <div className="p-3 bg-gray-800 dark:bg-gray-50 rounded-2xl mr-4">
+          <Icon className="w-6 h-6 text-gray-50 dark:text-gray-800" />
         </div>
         <div>
-          <h2 className="text-xl font-bold text-gray-900">{title}</h2>
-          <p className="text-gray-500 text-sm mt-1">{description}</p>
+          <h2 className="text-xl font-bold text-gray-800 dark:text-gray-50">{title}</h2>
+          <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">{description}</p>
         </div>
       </div>
       {children}
@@ -107,20 +107,16 @@ const EditGroupForm = () => {
 
   const handleMouseEnter = (day, hour) => {
     if (isDragging.current) {
-      const timeSlot = getTimeSlotKey(day, hour);
       const [startDay, startHour] = selectionStart.split(' ');
 
-      // Solo procesar si estamos en el mismo día
       if (startDay === day) {
         const startIndex = HOURS.indexOf(startHour);
         const currentIndex = HOURS.indexOf(hour);
         const start = Math.min(startIndex, currentIndex);
         const end = Math.max(startIndex, currentIndex);
 
-        // Crear un nuevo conjunto de slots seleccionados, manteniendo las selecciones de otros días
         const newSchedule = selectedSchedule.filter(slot => !slot.startsWith(day));
 
-        // Agregar todas las horas intermedias del día actual
         for (let i = start; i <= end; i++) {
           const currentSlot = getTimeSlotKey(day, HOURS[i]);
           if (isSelecting) {
@@ -137,7 +133,6 @@ const EditGroupForm = () => {
     isDragging.current = false;
   };
 
-// Agrega el efecto para manejar el mouse up global
   useEffect(() => {
     const handleGlobalMouseUp = () => {
       isDragging.current = false;
@@ -176,16 +171,13 @@ const EditGroupForm = () => {
     setSaveStatus(null);
 
     try {
-      // Obtener los IDs de estudiantes actuales del grupo
       const groupRef = doc(db, 'groups', groupId);
       const groupDoc = await getDoc(groupRef);
       const currentStudentIds = groupDoc.exists() ? (groupDoc.data().studentIds || []) : [];
 
-      // Identificar estudiantes agregados y removidos
       const studentsToAdd = formData.studentIds.filter(id => !currentStudentIds.includes(id));
       const studentsToRemove = currentStudentIds.filter(id => !formData.studentIds.includes(id));
 
-      // Actualizar el grupo
       await updateDoc(groupRef, {
         ...formData,
         schedule: JSON.stringify(selectedSchedule),
@@ -199,7 +191,6 @@ const EditGroupForm = () => {
         });
       }
 
-      // Remover groupId para estudiantes eliminados
       for (const studentId of studentsToRemove) {
         const studentRef = doc(db, 'users', studentId);
         await updateDoc(studentRef, {
@@ -218,14 +209,14 @@ const EditGroupForm = () => {
   };
 
   return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-black dark:to-black">
         <div className="max-w-7xl mx-auto px-6 py-12">
           <div className="flex justify-between items-center mb-8">
             <div>
-              <h1 className="text-4xl font-bold text-gray-900 mb-3">
+              <h1 className="text-4xl font-bold text-gray-800 dark:text-gray-50 mb-3">
                 Editar Grupo
               </h1>
-              <p className="text-gray-500 text-lg">
+              <p className="text-gray-500 dark:text-gray-400 text-lg">
                 Gestiona la información y estudiantes del grupo
               </p>
             </div>
@@ -240,7 +231,7 @@ const EditGroupForm = () => {
             >
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-800 dark:text-gray-50 mb-2">
                     Nombre del Grupo
                   </label>
                   <input
@@ -248,11 +239,11 @@ const EditGroupForm = () => {
                       name="name"
                       value={formData.name}
                       onChange={handleInputChange}
-                      className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full p-3 border border-black dark:bg-black text-gray-800 dark:text-gray-100 dark:border-white focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-800 rounded-xl "
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-800 dark:text-gray-50 mb-2">
                     Sala
                   </label>
                   <input
@@ -260,7 +251,7 @@ const EditGroupForm = () => {
                       name="classroom"
                       value={formData.classroom}
                       onChange={handleInputChange}
-                      className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full p-3 border border-black dark:bg-black text-gray-800 dark:text-gray-100 dark:border-white focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-800 rounded-xl "
                   />
                 </div>
               </div>
@@ -276,9 +267,9 @@ const EditGroupForm = () => {
                 <table className="w-full border-separate border-spacing-0">
                   <thead>
                   <tr>
-                    <th className="p-2 border-b-2 border-gray-200"></th>
+                    <th className="p-2 border-b-2 border-black dark:border-white"></th>
                     {HOURS.map((hour) => (
-                        <th key={hour} className="p-2 text-sm text-center border-b-2 border-gray-200">
+                        <th key={hour} className="p-2 text-sm dark:text-gray-50 text-center border-b-2 border-black dark:border-white">
                           {hour}
                         </th>
                     ))}
@@ -287,7 +278,7 @@ const EditGroupForm = () => {
                   <tbody>
                   {DAYS.map((day) => (
                       <tr key={day}>
-                        <td className="p-2 font-semibold">{day}</td>
+                        <td className="p-2 font-semibold dark:text-gray-50">{day}</td>
                         {HOURS.map((hour, hourIndex) => {
                           const isSelected = selectedSchedule.includes(`${day} ${hour}`);
                           const nextHourSelected = hourIndex < HOURS.length - 1 &&
@@ -299,7 +290,7 @@ const EditGroupForm = () => {
                               <td
                                   key={`${day}-${hour}`}
                                   className={`p-2 cursor-pointer text-center transition-all duration-200
-                  ${isSelected ? 'bg-blue-500 text-white' : 'hover:bg-gray-100'}
+                  ${isSelected ? 'bg-gray-800 text-gray-50 dark:bg-gray-50 dark:text-gray-800' : 'hover:bg-gray-100 dark:hover:bg-gray-800'}
                   ${isSelected && nextHourSelected ? 'rounded-r-none' : ''}
                   ${isSelected && prevHourSelected ? 'rounded-l-none' : ''}
                   ${isSelected && !nextHourSelected && !prevHourSelected ? 'rounded-xl' : ''}
@@ -330,7 +321,9 @@ const EditGroupForm = () => {
                   <button
                       type="button"
                       onClick={() => setShowStudentSelector(!showStudentSelector)}
-                      className="p-2 bg-gray-800 text-white rounded-xl hover:bg-gray-700 transition-all duration-200 flex items-center space-x-2"
+                      className="p-2 bg-gray-800 text-gray-50 border border-gray-800 hover:bg-gray-50 hover:text-gray-800 hover:border hover:border-black
+                                                                dark:bg-gray-50 dark:text-gray-800 dark:border dark:border-black dark:hover:border-gray-50 dark:hover:bg-black dark:hover:text-gray-50
+                 rounded-xl transition-all duration-200 flex items-center space-x-2"
                   >
                     <UserPlus className="w-5 h-5"/>
                     <span>Agregar Estudiante</span>
@@ -338,15 +331,15 @@ const EditGroupForm = () => {
                 </div>
 
                 {showStudentSelector && (
-                    <div className="bg-gray-50 rounded-xl p-4">
+                    <div className="rounded-xl p-4">
                       <div className="flex items-center mb-4">
-                        <Search className="w-5 h-5 text-gray-400 mr-2"/>
+                        <Search className="w-5 h-5 text-gray-800 dark:text-gray-50 mr-2"/>
                         <input
                             type="text"
                             placeholder="Buscar estudiantes..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            className="w-full p-3 border border-black dark:bg-black text-gray-800 dark:text-gray-100 dark:border-white focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-800 rounded-xl "
                         />
                       </div>
                       <div className="max-h-60 overflow-y-auto space-y-2">
@@ -354,23 +347,23 @@ const EditGroupForm = () => {
                             <div
                                 key={student.id}
                                 onClick={() => handleAddStudent(student)}
-                                className="flex items-center justify-between p-3 bg-white rounded-xl cursor-pointer hover:bg-gray-100 transition-all duration-200"
+                                className="flex items-center justify-between p-3 rounded-xl cursor-pointer border-black dark:border-white"
                             >
-                              <span className="font-medium">{student.name}</span>
-                              <Plus className="w-4 h-4 text-gray-600" />
+                              <span className="font-medium dark:text-gray-50">{student.name}</span>
+                              <Plus className="w-4 h-4 text-gray-500 dark:text-gray-400" />
                             </div>
                         ))}
                       </div>
                     </div>
                 )}
 
-                <div className="space-y-2">
+                <div className="max-h-60 overflow-y-auto space-y-2">
                   {selectedStudents.map((student) => (
                       <div
                           key={student.id}
-                          className="flex items-center justify-between p-3 bg-white rounded-xl border border-gray-200"
+                          className="flex items-center justify-between p-3 rounded-xl border border-black dark:border-white"
                       >
-                        <span className="font-medium">{student.name || 'Sin nombre'}</span>
+                        <span className="font-medium dark:text-gray-50">{student.name || 'Sin nombre'}</span>
                         <button
                             type="button"
                             onClick={() => handleRemoveStudent(student.id)}
@@ -388,7 +381,9 @@ const EditGroupForm = () => {
             <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-gray-800 text-white py-4 rounded-2xl hover:bg-gray-700 transition-all duration-200 flex items-center justify-center space-x-2"
+                className="w-full bg-gray-800 text-gray-50 border border-gray-800 hover:bg-gray-50 hover:text-gray-800 hover:border hover:border-black
+                                                                dark:bg-gray-50 dark:text-gray-800 dark:border dark:border-black dark:hover:border-gray-50 dark:hover:bg-black dark:hover:text-gray-50
+                py-4 rounded-2xl transition-all duration-200 flex items-center justify-center space-x-2"
             >
               <Save className="w-5 h-5" />
               <span>{loading ? 'Guardando...' : 'Guardar Cambios'}</span>

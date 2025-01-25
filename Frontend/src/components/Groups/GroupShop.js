@@ -16,7 +16,7 @@ const Modal = ({ isOpen, onClose, title, children }) => {
                         <h3 className="text-gray-800 dark:text-gray-50 font-black text-xl">{title}</h3>
                         <button
                             onClick={ onClose }
-                            className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-50
+                            className="px-4 py-2 bg-gray-800 hover:bg-gray-800 text-gray-50
                                                     dark:bg-gray-50 dark:hover:bg-white dark:text-gray-800
                             font-medium rounded-xl transition-all"
                         >
@@ -79,7 +79,7 @@ const ProductCard = ({
     };
 
     const handleNumberInput = (e, field) => {
-        const value = parseInt(e.target.value) || 0;
+        const value = parseInt(e.target.value) || 1;
 
         if (field === 'stock' || field === 'price') {
             if (value < 1) {
@@ -127,7 +127,7 @@ const ProductCard = ({
                             URL de la imagen
                         </label>
                         <input
-                            className="w-full px-4 py-2 bg-white dark:bg-black border border-gray-300 dark:border-gray-50 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-700 text-gray-900 dark:text-gray-100"
+                            className="w-full px-4 py-2 bg-white dark:bg-black border border-gray-300 dark:border-gray-50 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-800 text-gray-800 dark:text-gray-100"
                             placeholder="https://ejemplo.com/imagen.jpg"
                             value={editingProduct.image}
                             onChange={(e) => setEditingProduct(prev => ({
@@ -143,7 +143,7 @@ const ProductCard = ({
                                 Nombre del producto
                             </label>
                             <input
-                                className="w-full px-4 py-2 bg-white dark:bg-black border border-gray-300 dark:border-gray-50 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-700 text-gray-900 dark:text-gray-100"
+                                className="w-full px-4 py-2 bg-white dark:bg-black border border-gray-300 dark:border-gray-50 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-800 text-gray-800 dark:text-gray-100"
                                 placeholder="Nombre"
                                 value={editingProduct.name}
                                 onChange={(e) => setEditingProduct(prev => ({
@@ -160,7 +160,7 @@ const ProductCard = ({
                             <input
                                 type="number"
                                 min="1"
-                                className="w-full px-4 py-2 bg-white dark:bg-black border border-gray-300 dark:border-gray-50 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-700 text-gray-900 dark:text-gray-100"
+                                className="w-full px-4 py-2 bg-white dark:bg-black border border-gray-300 dark:border-gray-50 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-800 text-gray-800 dark:text-gray-100"
                                 placeholder="1"
                                 value={editingProduct.price}
                                 onChange={(e) => handleNumberInput(e, 'price')}
@@ -176,7 +176,7 @@ const ProductCard = ({
                             Descripción
                         </label>
                         <textarea
-                            className="w-full px-4 py-2 bg-white dark:bg-black border border-gray-300 dark:border-gray-50 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-700 text-gray-900 dark:text-gray-100"
+                            className="w-full px-4 py-2 bg-white dark:bg-black border border-gray-300 dark:border-gray-50 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-800 text-gray-800 dark:text-gray-100"
                             placeholder="Describe el producto"
                             rows="3"
                             value={editingProduct.description}
@@ -195,7 +195,7 @@ const ProductCard = ({
                             <input
                                 type="number"
                                 min="1"
-                                className="flex-1 px-4 py-2 bg-white dark:bg-black border border-gray-300 dark:border-gray-50 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-700 text-gray-900 dark:text-gray-100"
+                                className="flex-1 px-4 py-2 bg-white dark:bg-black border border-gray-300 dark:border-gray-50 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-800 text-gray-800 dark:text-gray-100"
                                 placeholder="1"
                                 value={editingProduct.stock}
                                 onChange={(e) => handleNumberInput(e, 'stock')}
@@ -311,7 +311,7 @@ const ProductCard = ({
                                 </button>
                                 <button
                                     onClick={() => onDelete(product.id)}
-                                    className="flex-1           bg-red-50 text-red-600 border border-red-600 hover:bg-red-600 hover:text-red-50
+                                    className="flex-1 bg-red-50 text-red-600 border border-red-600 hover:bg-red-600 hover:text-red-50
                                                                 dark:bg-red-600 dark:text-red-50 dark:border dark:border-red-600 dark:hover:border-red-50 dark:hover:bg-red-50 dark:hover:text-red-600
                                                                   font-medium py-2.5 px-4 rounded-xl transition-all duration-300 flex items-center justify-center gap-2"
                                 >
@@ -322,7 +322,7 @@ const ProductCard = ({
                         ) : (
                             <>
                                 <button
-                                    className="mt-4 w-full bg-gray-800 hover:bg-gray-700 text-gray-50 dark:bg-gray-50 dark:hover:bg-gray-100 dark:text-gray-800 font-medium py-2.5 px-4 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 group"
+                                    className="mt-4 w-full bg-gray-800 hover:bg-gray-800 text-gray-50 dark:bg-gray-50 dark:hover:bg-gray-100 dark:text-gray-800 font-medium py-2.5 px-4 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 group"
                                     onClick={() => setShowPurchaseModal(true)}
                                     disabled={product.stock < 1}
                                 >
@@ -354,7 +354,7 @@ const ProductCard = ({
                                         <div className="flex justify-end gap-3 mt-6">
                                             <button
                                                 onClick={handlePurchase}
-                                                className="px-4 py-2 bg-gray-800 text-gray-50 hover:bg-gray-700 dark:bg-gray-50 dark:text-gray-800 dark:hover:bg-white rounded-xl transition-colors"
+                                                className="px-4 py-2 bg-gray-800 text-gray-50 hover:bg-gray-800 dark:bg-gray-50 dark:text-gray-800 dark:hover:bg-white rounded-xl transition-colors"
                                             >
                                                 Confirmar Compra
                                             </button>
@@ -369,27 +369,6 @@ const ProductCard = ({
         </div>
     );
 };
-
-const TransactionCard = ({transaction}) => (
-    <div
-        className="bg-white rounded-2xl overflow-hidden border border-black hover:shadow-lg transition-all duration-300 p-4 sm:p-6">
-        <div className="flex justify-between items-start mb-4">
-            <div>
-                <h3 className="text-lg sm:text-xl font-semibold text-gray-800">{transaction.productName}</h3>
-                <p className="text-sm text-gray-500">
-                    {new Date(transaction.timestamp?.toDate()).toLocaleDateString()}
-                </p>
-            </div>
-            <span className="px-3 py-1 rounded-full text-sm font-medium bg-gray-50 text-gray-800">
-                {transaction.totalPrice} Turings
-            </span>
-        </div>
-        <div className="flex flex-col sm:flex-row sm:justify-between text-gray-600 gap-2">
-            <p className="text-sm">Estudiante: <span className="font-medium">{transaction.studentName}</span></p>
-            <p className="text-sm">Cantidad: <span className="font-medium">{transaction.quantity}</span></p>
-        </div>
-    </div>
-);
 
 const Shop = ({groupId}) => {
     const {

@@ -3,14 +3,13 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { doc, updateDoc, arrayUnion, collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import QRCode from 'react-qr-code';
 import { db } from '../../firebase';
-import { ArrowLeft } from 'lucide-react';
 
 const CreateActivity = () => {
   const { groupId } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [qrData, setQrData] = useState(null); // Para almacenar el QR
+  const [qrData] = useState(null);
 
   const [formData, setFormData] = useState({
     title: '',
@@ -23,7 +22,7 @@ const CreateActivity = () => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: name === 'turingBalance' || name === 'maxParticipants' ? parseInt(value) || 0 : value,
+      [name]: name === 'turingBalance' || name === 'maxParticipants' ? parseInt(value) || 1 : value,
     }));
   };
 
@@ -61,13 +60,12 @@ const CreateActivity = () => {
 
 
   return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-        <div className="max-w-3xl mx-auto px-6 py-12">
-          {/* Header */}
-          <div className="flex items-center mb-8">
+      <div className="min-h-screen bg-gray-50 dark:bg-black">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8 sm:mb-12">
             <div>
-              <h1 className="text-4xl font-bold text-gray-900">Nueva Actividad</h1>
-              <p className="text-gray-500 text-lg mt-1">Crea una nueva actividad para el grupo</p>
+              <h1 className="text-3xl sm:text-4xl font-bold text-gray-800 dark:text-gray-50 mb-2 sm:mb-3">Nueva Actividad</h1>
+              <p className="text-gray-500 dark:text-gray-400 text-base sm:text-lg">Crea una nueva actividad para el grupo</p>
             </div>
           </div>
 
@@ -77,52 +75,43 @@ const CreateActivity = () => {
               </div>
           )}
 
-          {qrData ? (
-              <div className="bg-white rounded-3xl border border-black shadow-sm p-8 text-center">
-                <h2 className="text-xl font-bold mb-4">Código QR Generado</h2>
-                <QRCode value={qrData} size={256} />
-                <p className="text-gray-500 mt-4">
-                  Escanea este código para acceder a la actividad recién creada.
-                </p>
-                <p className="text-gray-600 mt-2">Redirigiendo a la página del grupo...</p>
-              </div>
-          ) : (
-              <div className="bg-white rounded-3xl border border-black shadow-sm p-8">
+          <div className="bg-white dark:bg-black border-black dark:border-gray-50 rounded-2xl overflow-hidden border hover:shadow-lg transition-all duration-300 relative p-4 sm:p-6">
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Título</label>
+                    <label className="block text-xl font-medium text-gray-800 dark:text-gray-50 mb-2">Título</label>
                     <input
                         type="text"
                         name="title"
                         value={formData.title}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-800 focus:border-gray-800"
+                        className="w-full px-4 py-2 bg-white dark:bg-black border border-gray-300 dark:border-gray-50 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-800 text-gray-800 dark:text-gray-100"
                         required
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Descripción</label>
+                    <label className="block text-xl font-medium text-gray-800 dark:text-gray-50 mb-2">Descripción</label>
                     <textarea
                         name="description"
                         value={formData.description}
                         onChange={handleInputChange}
                         rows={4}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-800 focus:border-gray-800"
+                        className="w-full px-4 py-2 bg-white dark:bg-black border border-gray-300 dark:border-gray-50 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-800 text-gray-800 dark:text-gray-100"
                         required
                     />
                   </div>
 
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Turings a Otorgar</label>
+                      <label className="block text-xl font-medium text-gray-800 dark:text-gray-50 mb-2">Turings a Otorgar</label>
                       <input
                           type="number"
                           name="turingBalance"
                           value={formData.turingBalance}
                           onChange={handleInputChange}
-                          min="0"
-                          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-800 focus:border-gray-800"
+                          min="1"
+                          placeholder="1"
+                          className="w-full px-4 py-2 bg-white dark:bg-black border border-gray-300 dark:border-gray-50 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-800 text-gray-800 dark:text-gray-100"
                           required
                       />
                     </div>
@@ -130,21 +119,22 @@ const CreateActivity = () => {
                     <button
                         type="button"
                         onClick={() => navigate(-1)}
-                        className="px-6 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50"
+                        className="px-6 py-3 border rounded-xl bg-red-50 text-red-600 border-red-600 hover:bg-red-600 hover:text-red-50
+                                                                dark:bg-red-600 dark:text-red-50 dark:border dark:border-red-600 dark:hover:border-red-50 dark:hover:bg-red-50 dark:hover:text-red-600"
                     >
                       Cancelar
                     </button>
                     <button
                         type="submit"
                         disabled={loading}
-                        className="px-6 py-3 bg-gray-800 text-white rounded-xl hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
+                        className="px-6 py-3 rounded-xl bg-gray-800 text-gray-50 border border-gray-800 hover:bg-gray-50 hover:text-gray-800 hover:border hover:border-black
+                                                                dark:bg-gray-50 dark:text-gray-800 dark:border dark:border-black dark:hover:border-gray-50 dark:hover:bg-black dark:hover:text-gray-50"                    >
                       {loading ? 'Creando...' : 'Crear Actividad'}
                     </button>
                   </div>
                 </form>
               </div>
-          )}
+          )
         </div>
       </div>
   );
