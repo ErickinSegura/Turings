@@ -4,12 +4,14 @@ import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../../firebase';
 import { useAuth } from '../../context/authContext';
 import useShopTransactions from '../../hooks/UseShopTransactions';
+import { AlertCircle, CheckCircle2, Loader2 } from 'lucide-react';
 
 const ScanActivity = () => {
     const [scanResult, setScanResult] = useState(null);
     const [error, setError] = useState(null);
     const [isScanning, setIsScanning] = useState(true);
     const [hasCamera, setHasCamera] = useState(false);
+    const [isProcessing, setIsProcessing] = useState(false);
     const { user } = useAuth();
     const { recordActivityCompletion } = useShopTransactions(user?.groupId);
     const processingRef = useRef(false);
@@ -19,60 +21,48 @@ const ScanActivity = () => {
         const checkCamera = async () => {
             try {
                 if (!navigator?.mediaDevices?.getUserMedia) {
-                    throw new Error('Tu navegador no soporta el acceso a la cámara. Por favor, usa un navegador más reciente.');
+                    throw new Error('Navegador no compatible con cámara');
                 }
-
                 const stream = await navigator.mediaDevices.getUserMedia({ video: true });
                 stream.getTracks().forEach(track => track.stop());
                 setHasCamera(true);
             } catch (err) {
-                console.error('Error al acceder a la cámara:', err);
-                setError('No se pudo acceder a la cámara. Por favor, verifica los permisos.');
+                setError('Error al acceder a la cámara');
                 setHasCamera(false);
             }
         };
-
         checkCamera();
     }, []);
 
     const handleScan = async (data) => {
-        // Si no hay datos o ya estamos procesando, ignorar
         if (!data || processingRef.current) return;
 
         try {
             const scannedData = JSON.parse(data.text);
+            if (!scannedData?.activityId) throw new Error('QR inválido');
+            if (lastScannedRef.current === scannedData.activityId) return;
 
-            // Verificar si es el mismo QR escaneado en los últimos 5 segundos
-            if (lastScannedRef.current === scannedData.activityId) {
-                return;
-            }
-
-            // Marcar como procesando y guardar el ID
             processingRef.current = true;
+            setIsProcessing(true);
+            setError(null);
+            setScanResult(null);
             lastScannedRef.current = scannedData.activityId;
-            setIsScanning(false); // Detener el escaneo inmediatamente
+            setIsScanning(false);
 
             const { activityId } = scannedData;
+            const [activitySnap, userSnap] = await Promise.all([
+                getDoc(doc(db, 'activities', activityId)),
+                getDoc(doc(db, 'users', user.uid))
+            ]);
 
-            const activityRef = doc(db, 'activities', activityId);
-            const activitySnap = await getDoc(activityRef);
-
-            if (!activitySnap.exists()) {
-                throw new Error('Actividad no encontrada.');
-            }
+            if (!activitySnap.exists()) throw new Error('Actividad no encontrada');
 
             const activity = activitySnap.data();
+            const validationErrors = [];
+            if (activity.status !== 'active') validationErrors.push('Actividad inactiva');
+            if (userSnap.data()?.completedActivities?.includes(activityId)) validationErrors.push('Ya completada');
 
-            if (activity.status !== 'active') {
-                throw new Error('Esta actividad ya no acepta entregas.');
-            }
-
-            const userRef = doc(db, 'users', user.uid);
-            const userSnap = await getDoc(userRef);
-
-            if (userSnap.exists() && userSnap.data().completedActivities?.includes(activityId)) {
-                throw new Error('Ya has completado esta actividad.');
-            }
+            if (validationErrors.length > 0) throw new Error(validationErrors.join(' • '));
 
             const result = await recordActivityCompletion(
                 activityId,
@@ -81,27 +71,21 @@ const ScanActivity = () => {
                 activity.turingBalance
             );
 
-            if (!result.success) {
-                throw new Error(result.error || 'Error al registrar la actividad');
-            }
-
-            setScanResult(`¡Actividad registrada! Ganaste ${activity.turingBalance} τ.`);
-
-            // Limpiar el ID escaneado después de 5 segundos
-            setTimeout(() => {
-                lastScannedRef.current = null;
-            }, 5000);
+            if (!result.success) throw new Error(result.error || 'Error al registrar');
+            setScanResult(`¡Registrada! +${activity.turingBalance}τ`);
 
         } catch (err) {
             setError(err.message);
         } finally {
-            processingRef.current = false;
+            setTimeout(() => {
+                processingRef.current = false;
+                setIsProcessing(false);
+            }, 500);
         }
     };
 
     const handleError = (err) => {
-        console.error('Error al escanear:', err);
-        setError('Error al escanear el código QR. Por favor, verifica los permisos de la cámara e intenta nuevamente.');
+        setError('Error al escanear QR');
         setIsScanning(false);
         processingRef.current = false;
     };
@@ -114,12 +98,55 @@ const ScanActivity = () => {
         lastScannedRef.current = null;
     };
 
+    const getResultContent = () => {
+        if (isProcessing) {
+            return (
+                <div className="flex flex-col items-center justify-center p-8 space-y-4">
+                    <Loader2 className="w-12 h-12 text-gray-800 dark:text-gray-200 animate-spin" />
+                    <p className="text-gray-600 dark:text-gray-400 font-medium">Validando...</p>
+                </div>
+            );
+        }
+
+        if (scanResult) {
+            return (
+                <div className="flex items-center bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 p-4 rounded-xl">
+                    <CheckCircle2 className="w-5 h-5 mr-3 shrink-0" />
+                    <div>
+                        <p className="font-medium">{scanResult}</p>
+                        <p className="text-sm mt-1">¡Buen trabajo!</p>
+                    </div>
+                </div>
+            );
+        }
+
+        if (error) {
+            return (
+                <div className="flex items-center bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 p-4 rounded-xl">
+                    <AlertCircle className="w-5 h-5 mr-3 shrink-0" />
+                    <div>
+                        <p className="font-medium">{error}</p>
+                        <p className="text-sm mt-1">Intenta escanear de nuevo</p>
+                    </div>
+                </div>
+            );
+        }
+
+        return null;
+    };
+
     if (!hasCamera) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6">
-                <div className="max-w-3xl mx-auto bg-white rounded-3xl border border-black shadow-md p-6">
-                    <div className="p-4 bg-red-100 text-red-800 rounded-lg">
-                        {error || 'No se detectó una cámara. Por favor, verifica los permisos y usa un dispositivo con cámara.'}
+            <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-black dark:to-black">
+                <div className="max-w-3xl mx-auto px-6 py-12">
+                    <div className="bg-white dark:bg-black rounded-3xl border border-black dark:border-white p-8">
+                        <div className="flex items-center bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 p-4 rounded-xl">
+                            <AlertCircle className="w-5 h-5 mr-3 shrink-0" />
+                            <div>
+                                <p className="font-medium">{error || 'Cámara no detectada'}</p>
+                                <p className="text-sm mt-1">Verifica los permisos de cámara</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -127,37 +154,56 @@ const ScanActivity = () => {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6">
-            <div className="max-w-3xl mx-auto bg-white rounded-3xl border border-black p-6">
-                <h1 className="text-2xl font-bold text-gray-900 mb-6">Escanear Actividad</h1>
-                {isScanning ? (
-                    <div className="relative w-full h-64 bg-gray-100 rounded-lg overflow-hidden">
-                        <QrReader
-                            delay={500} // Aumentado el delay
-                            style={{ width: '100%' }}
-                            onError={handleError}
-                            onScan={handleScan}
-                            constraints={{
-                                video: { facingMode: 'environment' }
-                            }}
-                        />
-                    </div>
-                ) : (
-                    <div className="text-center p-4">
-                        {scanResult ? (
-                            <div className="p-4 bg-green-100 text-green-800 rounded-lg">{scanResult}</div>
-                        ) : (
-                            <div className="p-4 bg-red-100 text-red-800 rounded-lg">{error}</div>
-                        )}
+        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-black dark:to-black">
+            <div className="max-w-3xl mx-auto px-6 py-12">
+                <div className="bg-white dark:bg-black rounded-3xl border border-black dark:border-white p-8">
+                    <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-50 mb-8">
+                        {isProcessing ? 'Validando...' : 'Escanear Actividad'}
+                    </h1>
 
-                        <button
-                            onClick={resetScanner}
-                            className="mt-4 px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-                        >
-                            {error ? 'Reintentar' : 'Escanear Otro QR'}
-                        </button>
-                    </div>
-                )}
+                    {isScanning ? (
+                        <div className="relative w-full aspect-square bg-gray-50 rounded-2xl overflow-hidden border-2 border-dashed border-gray-300">
+                            <QrReader
+                                delay={300}
+                                style={{
+                                    width: '100%',
+                                    height: '100%',
+                                    objectFit: 'cover'
+                                }}
+                                onError={handleError}
+                                onScan={handleScan}
+                                constraints={{
+                                    video: {
+                                        facingMode: 'environment',
+                                        width: { ideal: 1280 },
+                                        height: { ideal: 720 }
+                                    }
+                                }}
+                            />
+                            <div className="absolute inset-0 border-4 border-gray-800/20 rounded-2xl pointer-events-none" />
+                        </div>
+                    ) : (
+                        <div className="space-y-6">
+                            {getResultContent()}
+
+                            {!isProcessing && (
+                                <button
+                                    onClick={resetScanner}
+                                    className="w-full py-4 px-6 bg-gray-800 hover:bg-gray-900 dark:bg-gray-50 dark:hover:bg-gray-200
+                                    text-gray-50 dark:text-gray-900 rounded-xl font-medium transition-colors duration-300"
+                                >
+                                    {error ? 'Reintentar escaneo' : 'Escanear otro código'}
+                                </button>
+                            )}
+                        </div>
+                    )}
+
+                    {isScanning && (
+                        <p className="text-gray-500 dark:text-gray-400 text-sm mt-6 text-center">
+                            Enfoca el código QR dentro del área de escaneo
+                        </p>
+                    )}
+                </div>
             </div>
         </div>
     );

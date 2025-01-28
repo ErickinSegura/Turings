@@ -57,7 +57,7 @@ const NavBar = () => {
     }
     if (user?.role === 'teacher') {
       return [
-        { label: 'Inicio', to: '/', onClick: () => navigate('/') },
+        { label: 'Inicio', to: '/profesor', onClick: () => navigate('/profesor') },
         { label: 'Grupos', to: '/grupos', onClick: () => navigate('/grupos') },
         { label: 'Alumnos', to: '/estudiantes', onClick: () => navigate('/estudiantes') },
       ];

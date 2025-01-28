@@ -22,6 +22,7 @@
   import ScanActivity from "./components/StudentView/ScanActivity";
   import GroupLeaderboardPage from "./components/Groups/GroupLeaderboardPage";
   import {ThemeProvider} from "./context/themeContext";
+  import TeacherHomepage from "./components/TeacherView/TeacherHomepage";
 
 
   function App() {
@@ -47,6 +48,11 @@
             <Route path="/" element={
               <ProtectedRoute>
                 <HomePage />
+              </ProtectedRoute>
+            } />
+            <Route path="/profesor" element={
+              <ProtectedRoute>
+                <TeacherHomepage />
               </ProtectedRoute>
             } />
             <Route path="/tienda" element={
