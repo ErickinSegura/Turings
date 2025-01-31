@@ -129,11 +129,13 @@ const LoginPage = () => {
         <div className="w-full max-w-5xl bg-white rounded-3xl shadow-lg overflow-hidden flex flex-col md:flex-row border-2 border-black">
           {/* Lado izquierdo - Imagen */}
           <div className="w-full md:w-1/2 h-48 md:h-auto bg-gray-800 flex items-center justify-center">
+            {/*
             <img
                 src="/api/placeholder/800/600"
                 alt="Turing Icon"
                 className="object-cover w-full h-full"
             />
+            */}
           </div>
 
           {/* Lado derecho - Formulario */}

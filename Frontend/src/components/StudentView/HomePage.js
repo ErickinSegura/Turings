@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
 import { useAuth } from '../../context/authContext';
 import {Terminal, PlusCircle, ChevronRight, ArrowDownCircle, ArrowUpCircle, Star} from 'lucide-react';
 import useShopTransactions from "../../hooks/UseShopTransactions";
@@ -91,6 +91,12 @@ const HomePage = () => {
   const { user } = useAuth();
   const { getStudentTransactions, loading: transactionsLoading, error: transactionsError } = useShopTransactions(user?.groupId);
   const [recentTransactions, setRecentTransactions] = useState([]);
+  const navigate = useNavigate();
+
+
+  if (user?.role === 'teacher') {
+    navigate('/profesor');
+  }
 
   useEffect(() => {
     const loadTransactions = async () => {

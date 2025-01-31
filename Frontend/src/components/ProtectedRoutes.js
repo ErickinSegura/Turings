@@ -6,12 +6,13 @@ function ProtectedRoutes({ children, allowedRoles }) {
   const { user } = useAuth();
 
   if (!user) {
-    // Si no está autenticado, redirige a la página de login
     return <Navigate to="/login" replace />;
   }
 
   if (allowedRoles && !allowedRoles.includes(user.role)) {
-    // Si el rol del usuario no está permitido, redirige a una página de error o inicio
+    if (user.role === 'teacher') {
+      return <Navigate to="/profesor" replace />;
+    }
     return <Navigate to="/" replace />;
   }
 

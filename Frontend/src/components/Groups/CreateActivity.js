@@ -84,7 +84,7 @@ const CreateActivity = () => {
                         name="title"
                         value={formData.title}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-2 bg-white dark:bg-black border border-gray-300 dark:border-gray-50 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-800 text-gray-800 dark:text-gray-100"
+                        className="w-full px-4 py-2 bg-white dark:bg-black border border-gray-800 dark:border-gray-50 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-800 text-gray-800 dark:text-gray-100"
                         required
                     />
                   </div>
@@ -96,7 +96,7 @@ const CreateActivity = () => {
                         value={formData.description}
                         onChange={handleInputChange}
                         rows={4}
-                        className="w-full px-4 py-2 bg-white dark:bg-black border border-gray-300 dark:border-gray-50 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-800 text-gray-800 dark:text-gray-100"
+                        className="w-full px-4 py-2 bg-white dark:bg-black border border-gray-800 dark:border-gray-50 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-800 text-gray-800 dark:text-gray-100"
                         required
                     />
                   </div>
@@ -111,7 +111,7 @@ const CreateActivity = () => {
                           onChange={handleInputChange}
                           min="1"
                           placeholder="1"
-                          className="w-full px-4 py-2 bg-white dark:bg-black border border-gray-300 dark:border-gray-50 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-800 text-gray-800 dark:text-gray-100"
+                          className="w-full px-4 py-2 bg-white dark:bg-black border border-gray-800 dark:border-gray-50 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-800 text-gray-800 dark:text-gray-100"
                           required
                       />
                     </div>

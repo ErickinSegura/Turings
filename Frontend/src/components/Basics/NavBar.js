@@ -76,12 +76,19 @@ const NavBar = () => {
       </div>
   );
 
+  const getHomeRoute = () => {
+    if (user && user.role === 'teacher') {
+      return '/profesor'; //
+    }
+    return '/';
+  };
+
   return (
       <nav className="w-full bg-white dark:bg-black shadow-lg border-b border-gray-50 dark:border-gray-800">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
-            <Link to="/" className="flex-shrink-0 group">
+            <Link to={getHomeRoute()} className="flex-shrink-0 group">
               <div className="relative">
                 <div className="absolute -inset-1" />
                 <img

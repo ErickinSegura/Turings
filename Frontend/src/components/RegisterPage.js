@@ -149,11 +149,13 @@ const RegisterPage = () => {
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 sm:p-6 md:p-8 lg:p-12 flex items-center justify-center">
         <div className="w-full max-w-5xl bg-white rounded-3xl shadow-lg overflow-hidden flex flex-col md:flex-row border-2 border-black">
           <div className="w-full md:w-1/2 h-48 md:h-auto bg-gray-800 flex items-center justify-center">
+            {/*
             <img
                 src="/api/placeholder/800/600"
-                alt="Register illustration"
+                alt="Turing Icon"
                 className="object-cover w-full h-full"
             />
+            */}
           </div>
 
           <div className="w-full md:w-3/4 p-6 sm:p-8 md:p-12">
