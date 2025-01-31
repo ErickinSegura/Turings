@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { collection, query, getDocs, where } from 'firebase/firestore';
 import { db } from '../../firebase';
-import { Users, PlusCircle, BookOpen, ClipboardList, ChevronRight, Coins, Edit, Eye, ArrowRight, Clock } from 'lucide-react';
+import { Users, PlusCircle, BookOpen, ClipboardList, ChevronRight, Coins} from 'lucide-react';
 
 const ActionCard = ({ icon: Icon, title, description, to, onClick }) => {
     const Component = to ? Link : 'div';

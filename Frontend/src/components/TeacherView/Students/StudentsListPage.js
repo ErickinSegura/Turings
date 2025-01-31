@@ -7,7 +7,6 @@ import {
   Filter,
   ChevronLeft,
   ChevronRight,
-  Loader2,
   X
 } from 'lucide-react';
 import {

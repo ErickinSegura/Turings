@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { doc, updateDoc, arrayUnion, collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import QRCode from 'react-qr-code';
 import { db } from '../../firebase';
 
 const CreateActivity = () => {
@@ -9,7 +8,6 @@ const CreateActivity = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [qrData] = useState(null);
 
   const [formData, setFormData] = useState({
     title: '',
