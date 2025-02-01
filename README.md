@@ -1,4 +1,4 @@
-# Turings 🪙
+# Turings (τ) 🪙
 
 [![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
 [![Firebase](https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)](https://firebase.google.com/)
@@ -6,7 +6,7 @@
 
 Plataforma de gamificación educativa para la gestión de la moneda virtual "Turings" en entornos académicos.
 
-![]
+![Captura de Turings](https://raw.githubusercontent.com/ErickinSegura/Turings/master/.github/README_IMG/ss.png)
 
 ## 🚀 Características principales
 - Sistema de gestión de la moneda virtual "Turings"
@@ -22,7 +22,7 @@ Plataforma de gamificación educativa para la gestión de la moneda virtual "Tur
 - **Frontend:** 
   - React + JavaScript
   - Tailwind CSS
-  - Componentes UI con Shadcn
+  - Componentes UI basados en Shadcn
 - **Backend:** 
   - Firebase Authentication
   - Firestore Database
@@ -85,8 +85,8 @@ Si encuentras algún error o tienes una sugerencia para mejorar la plataforma, s
 
 2. **Crea un nuevo issue**  
    Usa la plantilla adecuada:
-   - [Reporte de error](https://github.com/tu-usuario/turings/issues/new?template=bug_report.md)
-   - [Solicitud de función](https://github.com/tu-usuario/turings/issues/new?template=feature_request.md)
+   - [Reporte de error](https://github.com/ErickinSegura/Turings/issues/new?template=bug_report.md)
+   - [Solicitud de función](https://github.com/ErickinSegura/Turings/new?template=feature_request.md)
 
 3. **Proporciona detalles completos**:
    - Descripción clara del problema
