@@ -22,7 +22,7 @@ Plataforma de gamificación educativa para la gestión de la moneda virtual "Tur
 - **Frontend:** 
   - React + JavaScript
   - Tailwind CSS
-  - Componentes UI con Shadcn
+  - Componentes UI basados en Shadcn
 - **Backend:** 
   - Firebase Authentication
   - Firestore Database
