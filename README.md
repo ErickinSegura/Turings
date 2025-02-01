@@ -1,70 +1,126 @@
-# Getting Started with Create React App
+# Turings 🪙
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+[![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
+[![Firebase](https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)](https://firebase.google.com/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 
-## Available Scripts
+Plataforma de gamificación educativa para la gestión de la moneda virtual "Turings" en entornos académicos.
 
-In the project directory, you can run:
+![]
 
-### `npm start`
+## 🚀 Características principales
+- Sistema de gestión de la moneda virtual "Turings"
+- Canje de Turings por beneficios académicos:
+  - Extensiones de tiempo para proyectos
+  - Bonificaciones en calificaciones
+  - Otros beneficios personalizables
+- Panel de control para administración docente
+- Historial transaccional detallado
+- Sistema de seguimiento de progreso estudiantil
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## 🛠 Tecnologías utilizadas
+- **Frontend:** 
+  - React + JavaScript
+  - Tailwind CSS
+  - Componentes UI con Shadcn
+- **Backend:** 
+  - Firebase Authentication
+  - Firestore Database
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## 📦 Instalación
 
-### `npm test`
+### Requisitos previos
+- Node.js v16+
+- npm v8+
+- Cuenta de Firebase
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Pasos para la configuración
+1. Clonar el repositorio:
+```bash
+git clone https://github.com/tu-usuario/turings.git
+cd turings
+```
 
-### `npm run build`
+2. Instalar dependencias:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```bash
+npm install
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+3. Configurar Firebase:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- Crea un proyecto en Firebase Console
+- Configura los servicios de Authentication y Firestore
+- Crea un archivo .env.local en la raíz del proyecto con tus credenciales:
 
-### `npm run eject`
+```env
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+REACT_APP_FIREBASE_API_KEY=tu-api-key
+REACT_APP_FIREBASE_AUTH_DOMAIN=tu-domino.firebaseapp.com
+REACT_APP_FIREBASE_PROJECT_ID=tu-project-id
+REACT_APP_FIREBASE_STORAGE_BUCKET=tu-bucket.appspot.com
+REACT_APP_FIREBASE_MESSAGING_SENDER_ID=tu-sender-id
+REACT_APP_FIREBASE_APP_ID=tu-app-id
+```
+4. Iniciar la aplicación:
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```bash
+npm run start
+```
+ 
+## 🤝 Cómo contribuir
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+- Haz un fork del proyecto
+- Crea una rama para tu feature (git checkout -b feature/nueva-funcionalidad)
+- Realiza tus cambios y commitea (git commit -m 'Agrega nueva funcionalidad')
+- Haz push a la rama (git push origin feature/nueva-funcionalidad)
+- Abre un Pull 
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## 🐛 Reportar un problema
 
-## Learn More
+Si encuentras algún error o tienes una sugerencia para mejorar la plataforma, sigue estos pasos:
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+1. **Verifica si ya existe el problema**  
+   Busca en los [issues existentes](https://github.com/ErickinSegura/Turings/issues) para evitar duplicados
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+2. **Crea un nuevo issue**  
+   Usa la plantilla adecuada:
+   - [Reporte de error](https://github.com/tu-usuario/turings/issues/new?template=bug_report.md)
+   - [Solicitud de función](https://github.com/tu-usuario/turings/issues/new?template=feature_request.md)
 
-### Code Splitting
+3. **Proporciona detalles completos**:
+   - Descripción clara del problema
+   - Pasos para reproducirlo
+   - Comportamiento esperado vs actual
+   - Capturas de pantalla (si aplica)
+   - Entorno (navegador, SO, versión de la app)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+**Ejemplo de buen reporte**:  
+```markdown
+## Descripción
+[Explicación clara del problema]
 
-### Analyzing the Bundle Size
+## Pasos para reproducir
+1. Ir a '...'
+2. Hacer clic en '....'
+3. Ver error en '....'
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## Comportamiento esperado
+[Lo que debería suceder]
 
-### Making a Progressive Web App
+## Ambiente
+- Dispositivo: [ej. iPhone 12]
+- SO: [ej. iOS 15.4]
+- Navegador: [ej. Chrome 101]
+- Versión de la app: [ej. 1.2.0]
+``` 
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+### ⚠️ Importante:
 
-### Advanced Configuration
+- Usa títulos descriptivos (ej: "Error al canjear Turings en móvil")
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+- Etiqueta correctamente el issue (bug, mejora, feature, etc.)
 
-### Deployment
+- Los issues no constructivos o sin suficiente información serán cerrados
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+El equipo revisará tu reporte y responderá en un plazo máximo de 48 horas. ¡Gracias por ayudar a mejorar Turings! 🚀
