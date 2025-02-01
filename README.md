@@ -37,8 +37,8 @@ Plataforma de gamificación educativa para la gestión de la moneda virtual "Tur
 ### Pasos para la configuración
 1. Clonar el repositorio:
 ```bash
-git clone https://github.com/tu-usuario/turings.git
-cd turings
+git clone https://github.com/ErickinSegura/Turings.git
+cd Turings
 ```
 
 2. Instalar dependencias:
