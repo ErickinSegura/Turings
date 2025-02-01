@@ -6,7 +6,7 @@
 
 Plataforma de gamificación educativa para la gestión de la moneda virtual "Turings" en entornos académicos.
 
-![]
+![https://github.com/ErickinSegura/Turings/blob/master/.github/README_IMG/ss.png?raw=true]
 
 ## 🚀 Características principales
 - Sistema de gestión de la moneda virtual "Turings"
@@ -85,8 +85,8 @@ Si encuentras algún error o tienes una sugerencia para mejorar la plataforma, s
 
 2. **Crea un nuevo issue**  
    Usa la plantilla adecuada:
-   - [Reporte de error](https://github.com/tu-usuario/turings/issues/new?template=bug_report.md)
-   - [Solicitud de función](https://github.com/tu-usuario/turings/issues/new?template=feature_request.md)
+   - [Reporte de error](https://github.com/ErickinSegura/Turings/issues/new?template=bug_report.md)
+   - [Solicitud de función](https://github.com/ErickinSegura/Turings/new?template=feature_request.md)
 
 3. **Proporciona detalles completos**:
    - Descripción clara del problema
