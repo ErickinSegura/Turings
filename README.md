@@ -39,16 +39,6 @@ Plataforma de gamificación educativa para la gestión de la moneda virtual "Tur
 
 - Crea un proyecto en Firebase Console
 - Configura los servicios de Authentication y Firestore
-- Crea un archivo .env.local en la raíz del proyecto con tus credenciales:
-
-```env
-REACT_APP_FIREBASE_API_KEY=tu-api-key
-REACT_APP_FIREBASE_AUTH_DOMAIN=tu-domino.firebaseapp.com
-REACT_APP_FIREBASE_PROJECT_ID=tu-project-id
-REACT_APP_FIREBASE_STORAGE_BUCKET=tu-bucket.appspot.com
-REACT_APP_FIREBASE_MESSAGING_SENDER_ID=tu-sender-id
-REACT_APP_FIREBASE_APP_ID=tu-app-id
-```
 
 ### 📦 Instalación Manual
 
@@ -65,7 +55,19 @@ cd Turings
 npm install
 ```
 
-3. Iniciar la aplicación:
+3. Crea un archivo .env en la raíz del proyecto con tus credenciales de Firebase:
+
+```env
+REACT_APP_FIREBASE_API_KEY=tu-api-key
+REACT_APP_FIREBASE_AUTH_DOMAIN=tu-domino.firebaseapp.com
+REACT_APP_FIREBASE_PROJECT_ID=tu-project-id
+REACT_APP_FIREBASE_STORAGE_BUCKET=tu-bucket.appspot.com
+REACT_APP_FIREBASE_MESSAGING_SENDER_ID=tu-sender-id
+REACT_APP_FIREBASE_APP_ID=tu-app-id
+```
+
+
+4. Iniciar la aplicación:
 
 ```bash
 npm run start
