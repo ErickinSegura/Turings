@@ -27,14 +27,32 @@ Plataforma de gamificación educativa para la gestión de la moneda virtual "Tur
   - Firebase Authentication
   - Firestore Database
 
-## 📦 Instalación
+### 📦 Instalación
 
 ### Requisitos previos
 - Node.js v16+
 - npm v8+
 - Cuenta de Firebase
 
-### Pasos para la configuración
+
+#### Configurar Firebase:
+
+- Crea un proyecto en Firebase Console
+- Configura los servicios de Authentication y Firestore
+- Crea un archivo .env.local en la raíz del proyecto con tus credenciales:
+
+```env
+REACT_APP_FIREBASE_API_KEY=tu-api-key
+REACT_APP_FIREBASE_AUTH_DOMAIN=tu-domino.firebaseapp.com
+REACT_APP_FIREBASE_PROJECT_ID=tu-project-id
+REACT_APP_FIREBASE_STORAGE_BUCKET=tu-bucket.appspot.com
+REACT_APP_FIREBASE_MESSAGING_SENDER_ID=tu-sender-id
+REACT_APP_FIREBASE_APP_ID=tu-app-id
+```
+
+### 📦 Instalación Manual
+
+#### Pasos para la configuración
 1. Clonar el repositorio:
 ```bash
 git clone https://github.com/ErickinSegura/Turings.git
@@ -47,27 +65,44 @@ cd Turings
 npm install
 ```
 
-3. Configurar Firebase:
-
-- Crea un proyecto en Firebase Console
-- Configura los servicios de Authentication y Firestore
-- Crea un archivo .env.local en la raíz del proyecto con tus credenciales:
-
-```env
-
-REACT_APP_FIREBASE_API_KEY=tu-api-key
-REACT_APP_FIREBASE_AUTH_DOMAIN=tu-domino.firebaseapp.com
-REACT_APP_FIREBASE_PROJECT_ID=tu-project-id
-REACT_APP_FIREBASE_STORAGE_BUCKET=tu-bucket.appspot.com
-REACT_APP_FIREBASE_MESSAGING_SENDER_ID=tu-sender-id
-REACT_APP_FIREBASE_APP_ID=tu-app-id
-```
-4. Iniciar la aplicación:
+3. Iniciar la aplicación:
 
 ```bash
 npm run start
 ```
  
+## 📦 Instalación por Script
+#### Pasos para la configuración
+
+Igualmente se puede utilizar el script de instalación para algunos sistemas de Linux (Arch, Debian, Ubuntu).
+
+1. Clonar el repositorio:
+```bash
+git clone https://github.com/ErickinSegura/Turings.git
+cd Turings
+```
+
+2. Darle los permisos necesarios al script `install.sh` para ejecutar la aplicación:
+
+```bash
+chmod +x install.sh
+./install.sh
+```
+
+3. Para iniciar la aplicación debemos de dar permisos utilizar el script `start.sh`, puedes verificar los logs en /var/www/turings/app.log:
+
+```bash
+chmod +x start.sh
+./start.sh
+```
+
+4. Para detener la aplicación debemos de dar permisos utilizar el script `stop.sh`:
+
+```bash
+chmod +x stop.sh
+./stop.sh
+```
+
 ## 🤝 Cómo contribuir
 
 - Haz un fork del proyecto
