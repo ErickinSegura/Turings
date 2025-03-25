@@ -1,12 +1,12 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import {
     collection,
-    doc,
-    getDocs,
     query,
+    getDocs,
     where,
-    serverTimestamp,
-    runTransaction
+    runTransaction,
+    doc,
+    serverTimestamp
 } from 'firebase/firestore';
 import { db } from '../firebase';
 
@@ -14,7 +14,7 @@ const useShopTransactions = (groupId) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    const purchaseProduct = async (productId, studentId, quantity = 1) => {
+    const purchaseProduct = useCallback(async (productId, studentId, quantity = 1) => {
         setLoading(true);
         setError(null);
 
@@ -81,9 +81,9 @@ const useShopTransactions = (groupId) => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [groupId]);
 
-    const recordActivityCompletion = async (activityId, studentId, activityData, reward) => {
+    const recordActivityCompletion = useCallback(async (activityId, studentId, activityData, reward) => {
         setLoading(true);
         setError(null);
 
@@ -100,7 +100,6 @@ const useShopTransactions = (groupId) => {
 
                 const student = studentSnap.data();
 
-                // Crear registro de transacción para la actividad
                 const transactionData = {
                     type: 'activity',
                     activityId,
@@ -113,13 +112,11 @@ const useShopTransactions = (groupId) => {
                     status: 'completed'
                 };
 
-                // Actualizar balance del estudiante
                 transaction.update(studentRef, {
                     turingBalance: (student.turingBalance || 0) + reward,
                     completedActivities: [...(student.completedActivities || []), activityId]
                 });
 
-                // Crear registro de transacción
                 const newTransactionRef = doc(transactionsRef);
                 transaction.set(newTransactionRef, transactionData);
 
@@ -133,9 +130,9 @@ const useShopTransactions = (groupId) => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [groupId]);
 
-    const getStudentTransactions = async (studentId) => {
+    const getStudentTransactions = useCallback(async (studentId) => {
         try {
             const transactionsQuery = query(
                 collection(db, 'transactions'),
@@ -152,9 +149,9 @@ const useShopTransactions = (groupId) => {
             setError(err.message);
             return [];
         }
-    };
+    }, [groupId]);
 
-    const getGroupTransactions = async () => {
+    const getGroupTransactions = useCallback(async () => {
         try {
             const transactionsQuery = query(
                 collection(db, 'transactions'),
@@ -170,7 +167,7 @@ const useShopTransactions = (groupId) => {
             setError(err.message);
             return [];
         }
-    };
+    }, [groupId]);
 
     return {
         purchaseProduct,
