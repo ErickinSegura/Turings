@@ -59,6 +59,12 @@ const RegisterPage = () => {
       }
     }
 
+    if (!user.confirmPassword) {
+      newErrors.confirmPassword = 'Debe confirmar la contraseña';
+    } else if (user.password !== user.confirmPassword) {
+      newErrors.confirmPassword = 'Las contraseñas no coinciden';
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -256,7 +262,7 @@ const RegisterPage = () => {
                       <button
                         type="button"
                         onClick={toggleShowPassword}
-                        className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500"
                       >
                         {showPassword ? "Ocultar" : "Mostrar"}
                       </button>
@@ -284,12 +290,13 @@ const RegisterPage = () => {
                       <button
                         type="button"
                         onClick={toggleShowConfirmPassword}
-                        className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500"
                       >
                         {showConfirmPassword ? "Ocultar" : "Mostrar"}
                       </button>
                     </div>
                     {renderFieldError('password')}
+                    {renderFieldError('confirmPassword')}
                   </div>
                 </div>
 
