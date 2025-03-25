@@ -205,6 +205,15 @@ const LoginPage = () => {
                       />
                     </div>
                     {renderFieldError('password')}
+                    <div className="mt-1 text-right">
+                      <button
+                          type="button"
+                          onClick={() => navigate('/reset-password')}
+                          className="text-sm text-gray-600 hover:text-gray-800"
+                      >
+                        ¿Olvidaste tu contraseña?
+                      </button>
+                    </div>
                   </div>
                 </div>
 

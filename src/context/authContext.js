@@ -1,6 +1,7 @@
 import {
   createUserWithEmailAndPassword,
   onAuthStateChanged,
+  sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signOut
 } from "firebase/auth";
@@ -96,6 +97,17 @@ function AuthProvider({ children }) {
     }
   };
 
+  // Función para enviar un correo de recuperación de contraseña
+  const resetPassword = async (email) => {
+    try {
+      await sendPasswordResetEmail(auth, email);
+      return { success: true };
+    } catch (error) {
+      console.error("Error al enviar email de recuperación:", error);
+      return { success: false, error };
+    }
+  };
+
   // Mantener el estado del usuario actualizado en tiempo real
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -135,6 +147,7 @@ function AuthProvider({ children }) {
             logIn,
             user,
             logOut,
+            resetPassword,
             loading,
           }}
       >
