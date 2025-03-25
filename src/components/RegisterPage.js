@@ -6,10 +6,13 @@ const RegisterPage = () => {
   const [user, setUser] = useState({
     email: "",
     password: "",
+    confirmPassword: "",
     name: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const { signUp } = useAuth();
   const navigate = useNavigate();
 
@@ -72,12 +75,18 @@ const RegisterPage = () => {
     }));
   };
 
+  const toggleShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const toggleShowConfirmPassword = () => {
+    setShowConfirmPassword(!showConfirmPassword);
+  };
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!validateForm()) {
-      return;
-    }
+    if (!validateForm()) return;
 
     setIsSubmitting(true);
 
@@ -227,9 +236,7 @@ const RegisterPage = () => {
                   </div>
 
                   <div>
-                    <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-                      Contraseña
-                    </label>
+                    <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <svg className="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
@@ -237,16 +244,50 @@ const RegisterPage = () => {
                         </svg>
                       </div>
                       <input
-                          type="password"
-                          name="password"
-                          id="password"
-                          placeholder="Contraseña"
-                          value={user.password}
-                          onChange={handleChanges}
-                          disabled={isSubmitting}
-                          className={`pl-10 w-full px-3 py-2 border rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent bg-white
-                        ${errors.password ? 'border-red-500' : 'border-gray-300'}`}
+                        type={showPassword ? "text" : "password"}
+                        name="password"
+                        id="password"
+                        placeholder="Contraseña"
+                        value={user.password}
+                        onChange={handleChanges}
+                        disabled={isSubmitting}
+                        className={`pl-10 w-full px-3 py-2 border rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent bg-white ${errors.password ? 'border-red-500' : 'border-gray-300'}`}
                       />
+                      <button
+                        type="button"
+                        onClick={toggleShowPassword}
+                        className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                      >
+                        {showPassword ? "Ocultar" : "Mostrar"}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="mt-4">
+                    <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">Confirmar Contraseña</label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg className="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                        </svg>
+                      </div>
+                      <input
+                        type={showConfirmPassword ? "text" : "password"}
+                        name="confirmPassword"
+                        id="confirmPassword"
+                        placeholder="Confirma tu contraseña"
+                        value={user.confirmPassword}
+                        onChange={handleChanges}
+                        disabled={isSubmitting}
+                        className={`pl-10 w-full px-3 py-2 border rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent bg-white ${errors.confirmPassword ? 'border-red-500' : 'border-gray-300'}`}
+                      />
+                      <button
+                        type="button"
+                        onClick={toggleShowConfirmPassword}
+                        className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                      >
+                        {showConfirmPassword ? "Ocultar" : "Mostrar"}
+                      </button>
                     </div>
                     {renderFieldError('password')}
                   </div>
