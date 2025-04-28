@@ -1,9 +1,12 @@
 #!/bin/bash
-# start.sh - Inicia la aplicación utilizando 'serve'
+# start-https.sh - Inicia la aplicación utilizando 'serve' con HTTPS autofirmado
 
-# Variables (deben coincidir con las definidas en install.sh)
+# Variables
 APP_DIR="/var/www/turings"
-PORT="3000"  # Puerto en el que se servirá la aplicación
+PORT="8081"  # Puerto en el que se servirá la aplicación
+SSL_DIR="$APP_DIR/ssl"  # Directorio para guardar los certificados
+SSL_CERT="$SSL_DIR/cert.pem"  # Ruta al certificado SSL
+SSL_KEY="$SSL_DIR/key.pem"    # Ruta a la clave privada
 
 # Colores y estilos
 NC="\e[0m"
@@ -27,7 +30,6 @@ RAINBOW_COLORS=(
 ########################################
 # Funciones de impresión
 ########################################
-
 
 print_step() {
     echo -e "${YELLOW}» $1${NC}"
@@ -64,18 +66,73 @@ generate_rainbow_bar() {
 }
 
 ########################################
+# Función para generar certificados SSL
+########################################
+
+generate_ssl_certificates() {
+    print_step "Generando certificados SSL autofirmados..."
+
+    # Crear directorio para certificados si no existe
+    mkdir -p "$SSL_DIR"
+
+    # Generar certificado autofirmado
+    if openssl req -x509 -newkey rsa:2048 -keyout "$SSL_KEY" -out "$SSL_CERT" -days 365 -nodes \
+        -subj "/C=ES/ST=Estado/L=Ciudad/O=TuringsApp/OU=IT/CN=$(hostname -f)" 2>/dev/null; then
+        print_success "Certificados SSL generados correctamente en $SSL_DIR"
+        return 0
+    else
+        print_error "No se pudieron generar los certificados SSL"
+        return 1
+    fi
+}
+
+########################################
+# Verificar instalación de openssl
+########################################
+
+check_openssl() {
+    if ! command -v openssl &> /dev/null; then
+        print_error "OpenSSL no está instalado. Instalando..."
+        if command -v apt &> /dev/null; then
+            sudo apt update && sudo apt install -y openssl
+        elif command -v yum &> /dev/null; then
+            sudo yum install -y openssl
+        else
+            print_error "No se puede instalar OpenSSL automáticamente. Por favor, instálalo manualmente."
+            return 1
+        fi
+    fi
+    return 0
+}
+
+########################################
 # Inicio del script
 ########################################
 
 clear
 
-print_step "Iniciando la aplicación en el puerto $PORT..."
+print_step "Preparando para iniciar la aplicación con HTTPS en el puerto $PORT..."
 
 # Cambiar al directorio de la aplicación
 cd "$APP_DIR" || { print_error "No se pudo cambiar al directorio $APP_DIR"; exit 1; }
 
-# Inicia la aplicación en segundo plano y redirige los logs a app.log
-nohup serve -s build -l "$PORT" > app.log 2>&1 &
+# Verificar si openssl está instalado
+check_openssl || { print_error "OpenSSL es necesario para generar certificados"; exit 1; }
+
+# Verificar si los certificados ya existen o generarlos
+if [ ! -f "$SSL_CERT" ] || [ ! -f "$SSL_KEY" ]; then
+    generate_ssl_certificates || { print_error "No se pudo configurar HTTPS"; exit 1; }
+fi
+
+# Verificar si serve tiene la opción ssl-cert
+if ! serve -h | grep -q "\-\-ssl-cert"; then
+    print_error "El comando 'serve' no soporta la opción SSL. Actualizando..."
+    npm install -g serve@latest
+fi
+
+# Inicia la aplicación con SSL en segundo plano y redirige los logs a app.log
+print_step "Iniciando la aplicación segura..."
+nohup serve -s build -l "$PORT" --ssl-cert "$SSL_CERT" --ssl-key "$SSL_KEY" > app.log 2>&1 &
 # Guarda el PID en un archivo para detenerla posteriormente
 echo $! > serve.pid
 
@@ -85,10 +142,13 @@ printf "\n"
 for ((i=0; i<=bar_length; i++)); do
     percent=$(( i * 100 / bar_length ))
     bar=$(generate_rainbow_bar "$i" "$bar_length")
-    printf "\r${CYAN}Iniciando la aplicación: [${bar}] ${percent}%%${NC}"
+    printf "\r${CYAN}Iniciando la aplicación segura (HTTPS): [${bar}] ${percent}%%${NC}"
     sleep 0.05
 done
 printf "\n"
 
-print_success "La aplicación se está ejecutando en el puerto $PORT."
+print_success "La aplicación se está ejecutando con HTTPS en el puerto $PORT."
 echo -e "${CYAN}Puedes verificar los logs en ${APP_DIR}/app.log${NC}"
+echo -e "${GREEN}La aplicación está disponible en: https://$(hostname -f):$PORT${NC}"
+echo -e "${YELLOW}Nota: Como el certificado es autofirmado, los navegadores mostrarán una advertencia de seguridad.${NC}"
+echo -e "${YELLOW}      Puedes aceptar el riesgo y continuar para acceder a tu aplicación.${NC}"
