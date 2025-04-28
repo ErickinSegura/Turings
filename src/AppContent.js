@@ -42,7 +42,7 @@ export function AppContent() {
                 } />
 
                 <Route path="/profesor" element={
-                    <ProtectedRoute>
+                    <ProtectedRoute allowedRoles={['teacher']}>
                         <TeacherHomepage />
                     </ProtectedRoute>
                 } />
